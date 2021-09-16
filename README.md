@@ -4,7 +4,7 @@
 ### 0. Feladat: Ennek a felsorolásnak a felülírása a következő adatokkal:
 
 1. Kecskés D. Eszter, esztibeszti
-2. Litter Ádám, és GitHub felhasználóneve
+2. Litter Ádám, LitterAdamDev
 3. Mészáros Erik, és GitHub felhasználóneve
 4. Zsitva Tamás, és GitHub felhasználóneve
 
