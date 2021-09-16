@@ -3,10 +3,10 @@
 
 ### 0. Feladat: Ennek a felsorolásnak a felülírása a következő adatokkal:
 
-1. csapattag neve és GitHub felhasználóneve
-2. csapattag neve és GitHub felhasználóneve
-3. csapattag neve és GitHub felhasználóneve
-4. csapattag neve és GitHub felhasználóneve
+1. Kecskés D. Eszter, esztibeszti
+2. Litter Ádám, és GitHub felhasználóneve
+3. Mészáros Erik, és GitHub felhasználóneve
+4. Zsitva Tamás, és GitHub felhasználóneve
 
 ### 1. Feladat (határidő a PR nyitására: 10.06.)
 
