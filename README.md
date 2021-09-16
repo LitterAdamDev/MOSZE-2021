@@ -5,7 +5,7 @@
 
 1. Kecskés D. Eszter, esztibeszti
 2. Litter Ádám, LitterAdamDev
-3. Mészáros Erik, és GitHub felhasználóneve
+3. Mészáros Erik, erikmeszaros
 4. Zsitva Tamás, és GitHub felhasználóneve
 
 ### 1. Feladat (határidő a PR nyitására: 10.06.)
