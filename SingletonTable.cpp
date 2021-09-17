@@ -138,39 +138,50 @@ void SingletonTable::Delete(const std::string &attrs){
     }else if(parts.size() < 1){
         errorCode = 2;
     }else{
+        if(parts[0] == "")
+            errorCode = 2;
         if(parts[0].length() == 1){
             if(isalpha(parts[0][0])){
                 col = int(std::toupper(parts[0][0]) - 'A');
+                if(col > table_[0].size() || col < 0)
+                    errorCode = 5;
             }else{
                 if(isdigit(parts[0][0])){
                     row = stoi(parts[0]);
+                    if(row > table_.size() || row < 1)
+                        errorCode = 5;
                 }else{
                     errorCode = 3;
                 }
             }
         }else{
             for(unsigned i = 0; i < parts[0].length(); i++){
-                if(!isdigit(parts[0][i]) || (parts[0][0] == '0')){
+                if(!isdigit(parts[0][i]) || (parts[0][0] == '0'))
                     errorCode = 4;
-                }
             }
             if(errorCode == 0)
                 row = stoi(parts[0]);
+            if(row > table_.size()){
+                errorCode = 5;
+            }
         }
     }
     switch (errorCode)
     {
     case 1:
-        SetError("Missing attributes!");
+        SetError("Too much attributes!");
         break;
     case 2:
-        SetError("Too much attributes!");
+        SetError("Missing attributes!");
         break;
     case 3:
         SetError("The counter attribute must be a single letter.");
         break;
     case 4:
         SetError("The counter attribute must be unsigned integer.");
+        break;
+    case 5:
+        SetError("The counter defines no position in the table.");
         break;
     case 0:
         if(row != -1){
@@ -208,12 +219,11 @@ void SingletonTable::Insert(const std::string &attrs){
         errorCode = 2;
     }else{
         if(parts[0].length() == 1){
-            if(!isdigit(parts[0][0])){
-                errorCode = 3;
-            }else{
+            if(isdigit(parts[0][0])){
                 counter = stoi(parts[0]);
+            }else{
+                errorCode = 3;
             }
-                
         }else{
             for(unsigned i = 0; i < parts[0].length();i++)
                 if(!isdigit(parts[0][i]))
@@ -232,10 +242,14 @@ void SingletonTable::Insert(const std::string &attrs){
             if(isalpha(parts[3][0])){
                 type = "cols";
                 position = int(std::toupper(parts[3][0]) - 'A');
+                if(position < 0 || position > table_[0].size()-1)
+                    errorCode = 7; 
             }else{
                 if(isdigit(parts[3][0]) && parts[3][0] != '0'){
                     type = "rows";
                     position = stoi(parts[3]);
+                    if(position < 1 || position > table_.size())
+                        errorCode = 7;
                 }else{
                     errorCode = 6;
                 }
@@ -246,18 +260,19 @@ void SingletonTable::Insert(const std::string &attrs){
                     errorCode = 6;
                 }
             }
-            if(errorCode == 0){}
+            if(errorCode == 0){
                 type = "rows";
                 position = stoi(parts[3]);
+            }
         }
     }
     switch (errorCode)
     {
     case 1:
-        SetError("Missing attributes!");
+        SetError("Too much attributes!");
         break;
     case 2:
-        SetError("Too much attributes!");
+        SetError("Missing attributes!");
         break;
     case 3:
         SetError("The counter attribute must be a unsigned integer.");
@@ -270,6 +285,9 @@ void SingletonTable::Insert(const std::string &attrs){
         break;
     case 6:
         SetError("The position must be an integer or a single letter.");
+        break;
+    case 7:
+        SetError("The counter defines no position in the table.");
         break;
     case 0:
         if(type == "rows"){

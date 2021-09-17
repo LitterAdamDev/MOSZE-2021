@@ -6,6 +6,7 @@ int main()
 {
     SingletonTable* singelton = SingletonTable::GetInstance();
     while(singelton->GetIsOn()){
+        std::cout << std::flush;
         std::string command;
         std::string error = singelton->PrintError();
         singelton->PrintTable();
