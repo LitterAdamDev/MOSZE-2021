@@ -9,17 +9,57 @@ void SingletonTable::SetIsOn(bool value){
     this->isOn = value;
 }
 void SingletonTable::PrintTable(){
-    for(unsigned i = 0; i<table_[0].size();i++){
-        std::cerr << "\t" << "|" << (char)('A'+i);
-    }
-    std::cout << "\t" << "|" << std::endl;
-    unsigned rCounter = 1;
-    for(auto row : table_){
-        std::cerr << rCounter++;
-        for(auto cell : row){
-            std::cerr << "\t" << cell ;
+    /*
+        Minden sorban egyforma szélességűek legyenek az egy oszlophoz tartozó cellák,
+        a legszélesebb cella tartalmához igazodva.
+    */
+    std::vector<int> columnLengths(table_[0].size(),0);
+    for(unsigned r = 0; r < table_.size();r++){
+        for(unsigned c = 0; c < table_[r].size();c++){
+            if(table_[r][c].length() > columnLengths[c])
+                columnLengths[c] = table_[r][c].length();
         }
-        std::cout<<std::endl;
+    }
+    /*
+        tartalom balra igazítva
+    */
+    std::cout.setf(std::ios::left);
+    std::cout.width(std::to_string(table_.size()).length());
+    std::cout << "";
+    for(unsigned i = 0; i<table_[0].size();i++){
+        std::cout << "|";
+        std::cout.width(columnLengths[i]);
+        std::cout << (char)('A'+i);
+    }
+    int lengthOfRows = 0;
+    for(unsigned i = 0; i < columnLengths.size(); i++){
+        if(columnLengths[i] > 0){
+            lengthOfRows += columnLengths[i];
+        }else{
+            lengthOfRows += 1;
+        }
+    }
+    lengthOfRows += std::to_string(table_.size()).length() + table_[0].size()+1;
+    std::cout << "|" << std::endl;
+    std::string rowSeparator = "";
+    for(unsigned i = 0; i< lengthOfRows; i++){
+       rowSeparator += '-';
+    }
+    std::cout << rowSeparator << std::endl;
+    for(unsigned r = 0; r < table_.size();r++){
+        std::cout.width(std::to_string(table_.size()).length());
+        std::cout << r+1;
+        for(unsigned c = 0; c < table_[r].size();c++){
+            std::cout << "|";
+            if(columnLengths[c]>0){
+                std::cout.width(columnLengths[c]);
+            }else{
+                std::cout.width(1);
+            }
+            std::cout << table_[r][c];
+        }
+        std::cout<< "|" <<std::endl;
+        std::cout << rowSeparator << std::endl;
     }
 }
 
@@ -50,7 +90,7 @@ void SingletonTable::Edit(const std::string &attrs){
         int pos = attrs.find(' ');
         if(pos != -1){
             cell = attrs.substr(0, pos);
-            str = attrs.substr(pos, attrs.length());
+            str = attrs.substr(pos+1, attrs.length());
             int col = int(std::toupper(cell[0]) - 'A');
             int row;
             std::string tmp = cell.substr(1,cell.length());

@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <cctype>
+#include <numeric>
 
 typedef std::vector<std::vector<std::string> > Table;
 
