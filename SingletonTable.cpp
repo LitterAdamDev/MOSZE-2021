@@ -10,9 +10,9 @@ void SingletonTable::SetIsOn(bool value){
 }
 void SingletonTable::PrintTable(){
     for(unsigned i = 0; i<table_[0].size();i++){
-        std::cerr << "\t" << (char)('A'+i);
+        std::cerr << "\t" << "|" << (char)('A'+i);
     }
-    std::cout<<std::endl;
+    std::cout << "\t" << "|" << std::endl;
     unsigned rCounter = 1;
     for(auto row : table_){
         std::cerr << rCounter++;
@@ -32,7 +32,6 @@ std::string SingletonTable::PrintError(){
 void SingletonTable::SplitString(const std::string& s, std::vector<std::string>& v){
 	std::string temp = "";
 	for(int i=0;i<s.length();++i){
-		
 		if(s[i]==' '){
 			v.push_back(temp);
 			temp = "";
@@ -40,7 +39,6 @@ void SingletonTable::SplitString(const std::string& s, std::vector<std::string>&
 		else{
 			temp.push_back(s[i]);
 		}
-		
 	}
 	v.push_back(temp);
 }
@@ -49,7 +47,6 @@ void SingletonTable::Edit(const std::string &attrs){
     if(attrs != ""){
         std::string cell;
         std::string str;
-        
         int pos = attrs.find(' ');
         if(pos != -1){
             cell = attrs.substr(0, pos);
@@ -94,7 +91,7 @@ void SingletonTable::Add(const std::string &attrs){
     }else{
         for(unsigned i = 0; i< parts[0].length();i++)
             if(!isdigit(parts[0][i])) errorCode = 3;
-        
+
         if(errorCode == 0)
             if((parts[1] != "cols") && (parts[1] != "rows"))
                 errorCode = 4;
