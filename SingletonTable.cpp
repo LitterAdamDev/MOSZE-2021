@@ -143,7 +143,7 @@ void SingletonTable::Delete(const std::string &attrs){
         if(parts[0].length() == 1){
             if(isalpha(parts[0][0])){
                 col = int(std::toupper(parts[0][0]) - 'A');
-                if(col > table_[0].size() || col < 0)
+                if(col > table_[0].size()-1 || col < 0)
                     errorCode = 5;
             }else{
                 if(isdigit(parts[0][0])){
@@ -197,7 +197,7 @@ void SingletonTable::Delete(const std::string &attrs){
                     table_[i][0] = "";
             }else{
                 for(unsigned i = 0; i < table_.size(); i++)
-                    table_[i].erase(table_[i].begin() + col);
+                    table_[i].erase(table_[i].begin() + col-1);
             }
         }
         break;
