@@ -1,5 +1,9 @@
 .vscode/*
 *.code-workspace
+*.o
+*.exe
+main
+*csv
 
 # Local History for Visual Studio Code
 .history/
