@@ -13,14 +13,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@harmadik_feladat
+    - uses: actions/checkout@harmadik_feladat
 
-      - run: sudo apt install doxygen graphviz texlive
-      - run: doxygen doxyconf
+    - run: sudo apt install doxygen graphviz texlive
+    - run: doxygen doxyconf
 
-      - uses: s0/git-publish-subdir-action@v2.4.0
+    uses: s0/git-publish-subdir-action@v2.4.0
 
     env:
-        - REPO: self
-        - BRANCH: doxygen_pages
-        - Folder: docs/
+      REPO: self
+      BRANCH: doxygen_pages
+      Folder: docs/
+      GITHUB_TOKEN: $(( secrets.GITHUB_TOKEN))
