@@ -1,4 +1,4 @@
-name: doxygen
+name: doxygen.yml
 
 on:
   push:
@@ -17,6 +17,8 @@ jobs:
 
     - run: sudo apt install doxygen graphviz texlive
     - run: doxygen doxyconf
+
+    -name: Push git subdir as a branch
 
     uses: s0/git-publish-subdir-action@v2.4.0
 
