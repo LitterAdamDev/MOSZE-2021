@@ -1,0 +1,26 @@
+name: doxygen
+
+on:
+  push:
+    branches:
+     - harmadik_feladat
+     - doxygen_pages
+
+
+jobs:
+  deploy:
+    name: doxygen files
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@harmadik_feladat
+
+      - run: sudo apt install doxygen graphviz texlive
+      - run: doxygen doxyconf
+
+      - uses: s0/git-publish-subdir-action@v2.4.0
+
+      env:
+        REPO: self
+        BRANCH: doxygen_pages
+        Folder: docs/
