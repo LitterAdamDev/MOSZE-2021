@@ -20,7 +20,7 @@ jobs:
 
       - uses: s0/git-publish-subdir-action@v2.4.0
 
-      env:
-        REPO: self
-        BRANCH: doxygen_pages
-        Folder: docs/
+    env:
+        - REPO: self
+        - BRANCH: doxygen_pages
+        - Folder: docs/
