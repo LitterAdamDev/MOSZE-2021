@@ -1,10 +1,7 @@
 name: doxygen.yml
 
 on:
-  push:
-    branches:
-     - harmadik_feladat
-     - doxygen_pages
+  push
 
 
 jobs:
@@ -13,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@harmadik_feladat
+    - uses: actions/checkout@v2
 
     - run: sudo apt install doxygen graphviz texlive
-    - run: doxygen doxyconf
+    - run: doxygen ../../doxyconf
 
     -name: Push git subdir as a branch
 
@@ -26,4 +23,4 @@ jobs:
       REPO: self
       BRANCH: doxygen_pages
       Folder: docs/
-      GITHUB_TOKEN: $(( secrets.GITHUB_TOKEN))
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
