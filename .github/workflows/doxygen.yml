@@ -16,7 +16,7 @@ jobs:
     - uses: actions/checkout@harmadik_feladat
 
     - run: sudo apt install doxygen graphviz texlive
-    - run: doxygen doxyconf
+    - run: doxygen ../../doxyconf
 
     -name: Push git subdir as a branch
 
