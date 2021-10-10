@@ -3,10 +3,9 @@ name: Documentation
 on: 
   push:
     branches:
-    - main
+    - harmadik_feladat
     - gh-pages
 
-name: jobs
 jobs:
   deploy:
     name: Deploy to git pages
@@ -14,11 +13,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: doxygen action
+
     - run: sudo apt install doxygen graphviz texlive
     - run: doxygen doxyconf
 
-    -name: Push git subdir as a branch
+    - name: Push git subdir as a branch
     uses: s0/git-publish-subdir-action@v2.4.0
     env:
       REPO: self
