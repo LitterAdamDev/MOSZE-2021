@@ -5,6 +5,7 @@
 main
 *csv
 /docs
+.log
 
 # Local History for Visual Studio Code
 .history/
