@@ -18,4 +18,4 @@ jobs:
         BRANCH: gh-pages
         FOLDER: docs/
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - run: pdflatex refman.tex
+    - run: pdflatex latex/refman.tex
