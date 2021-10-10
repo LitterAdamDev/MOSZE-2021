@@ -15,6 +15,6 @@ jobs:
       uses: s0/git-publish-subdir-action@v2.4.0
       env:
         REPO: self
-        BRANCH: harmadik_feladat
-        Folder: docs/
+        BRANCH: gh-pages
+        FOLDER: docs/
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
