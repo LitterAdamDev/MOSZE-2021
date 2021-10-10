@@ -3,8 +3,8 @@ name: Documentation
 on: 
   push:
     branches:
-    - harmadik_feladat
-    - gh-pages
+      - harmadik_feladat
+      - gh-pages
 
 jobs:
   deploy:
@@ -18,9 +18,11 @@ jobs:
     - run: doxygen doxyconf
 
     - name: Push git subdir as a branch
+
     uses: s0/git-publish-subdir-action@v2.4.0
+
     env:
       REPO: self
       BRANCH: gh-pages
-      Folder: docs
+      Folder: docs/
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
