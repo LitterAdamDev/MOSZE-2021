@@ -8,7 +8,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@harmadik_feladat
+    - uses: actions/checkout@v2
     - run: sudo apt install doxygen graphviz texlive
     - run: doxygen doxyconf
     - name: Push git subdir as a branch
