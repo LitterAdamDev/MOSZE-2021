@@ -1,28 +1,21 @@
 name: Documentation
 
-on: 
-  push:
-    branches:
-      - harmadik_feladat
-      - gh-pages
+on: push
+
 
 jobs:
   deploy:
-    name: Deploy to git pages
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@harmadik_feladat
 
     - run: sudo apt install doxygen graphviz texlive
     - run: doxygen doxyconf
 
     - name: Push git subdir as a branch
-
     uses: s0/git-publish-subdir-action@v2.4.0
-
     env:
       REPO: self
-      BRANCH: gh-pages
+      BRANCH: harmadik_feladat
       Folder: docs/
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
