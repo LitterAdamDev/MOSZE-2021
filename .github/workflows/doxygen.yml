@@ -1,26 +1,25 @@
-name: doxygen.yml
+name: Documentation
 
-on:
-  push
+on: 
+  push:
+    - main
+    - gh-pages
 
-
+name: jobs
 jobs:
   deploy:
-    name: doxygen files
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
-
+    - name: doxygen action
     - run: sudo apt install doxygen graphviz texlive
-    - run: doxygen ../../doxyconf
+    - run: doxygen doxyconf
 
     -name: Push git subdir as a branch
-
     uses: s0/git-publish-subdir-action@v2.4.0
-
     env:
       REPO: self
-      BRANCH: doxygen_pages
-      Folder: docs/
+      BRANCH: gh-pages
+      Folder: docs
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
