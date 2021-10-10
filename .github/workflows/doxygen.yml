@@ -9,6 +9,7 @@ on:
 name: jobs
 jobs:
   deploy:
+    name: Deploy to git pages
     runs-on: ubuntu-latest
 
     steps:
