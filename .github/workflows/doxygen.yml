@@ -10,7 +10,7 @@ jobs:
     - uses: actions/checkout@v2
     - run: sudo apt install doxygen graphviz texlive
     - run: doxygen doxyconf 
-    - uses: pdflatex refman.tex
+           pdflatex latex/refman.tex
     - name: Push git subdir as a branch
       uses: s0/git-publish-subdir-action@v2.4.0
       env:
