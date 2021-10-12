@@ -549,7 +549,6 @@ struct Address{
 };
 
 void SingletonTable::Swap(const std::string &attrs){
-    std::cerr<<"start";
     int errorCode = 0;
     std::string tmp;
     Address adrs_arr[2];
@@ -574,7 +573,6 @@ void SingletonTable::Swap(const std::string &attrs){
             }   
         }
     }
-    std::cerr<<"line1";
         if(errorCode == 0){
             char col_chr;
             std::string row_st;
@@ -589,8 +587,6 @@ void SingletonTable::Swap(const std::string &attrs){
                 for (unsigned i=1; i<=parts[adrs_i].length()-1;i++){
                     row_st += parts[adrs_i][i];
                 }
-                std::cerr<<"\n";
-                std::cerr<<row_st << "\n";
                 adrs_arr[adrs_i].row=(unsigned) std::stoi(row_st);
                 if ((adrs_arr[adrs_i].row > table_.size()) || adrs_arr[adrs_i].row<=0){
                     errorCode=4;
@@ -598,7 +594,6 @@ void SingletonTable::Swap(const std::string &attrs){
                 }
             }
         }
-    std::cerr<<"line3";
     switch (errorCode){
     case 1:
         SetError("Missing attributes!");
@@ -613,12 +608,6 @@ void SingletonTable::Swap(const std::string &attrs){
         SetError("Cell is out of range!");
         break;
     case 0:
-        std::cerr<<"line2";
-        std::cerr<<"col:" << adrs_arr[0].col<<"\n";
-        std::cerr<<"row:" << adrs_arr[0].row<<"\n";
-        std::cerr<<"col size:" <<table_.size()<<"\n";
-        std::cerr<<"row size:" << table_[0].size()<<"\n";
-
         tmp = table_[adrs_arr[0].row -1][adrs_arr[0].col -1];
         table_[adrs_arr[0].row -1][adrs_arr[0].col -1] = table_[adrs_arr[1].row -1][adrs_arr[1].col -1];
         table_[adrs_arr[1].row -1][adrs_arr[1].col -1] = tmp;
