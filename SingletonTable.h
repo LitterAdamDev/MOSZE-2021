@@ -32,6 +32,8 @@ protected:
     void SetError(const std::string&);
     void SplitString(const std::string&, std::vector<std::string>&);
     void SetIsOn(bool);
+    void Align(const std::string&);
+    void Clear(const std::string&);
 
 public:
     SingletonTable(SingletonTable&) = delete;

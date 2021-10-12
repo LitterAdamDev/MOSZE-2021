@@ -437,6 +437,12 @@ void SingletonTable::Exit(){
     SetIsOn(false);
     std::cout << "Folyamat megszakítva..." << std::endl;
 }
+void SingletonTable::Align(const std::string &attrs){
+
+}
+void SingletonTable::Clear(const std::string &attrs){
+
+}
 void SingletonTable::Save(const std::string &attrs){
 
     std::vector<std::string> parts;
@@ -503,6 +509,10 @@ void SingletonTable::ExecuteCommand(const std::string& command){
         Exit();
     }else if(commandType == "save"){
         Save(param);
+    }else if(commandType == "clear"){
+        Clear(param);
+    }else if(commandType == "align"){
+        Align(param);
     }else{
         SetError("There is no command with the name \"" + commandType + "\"!");
     }
