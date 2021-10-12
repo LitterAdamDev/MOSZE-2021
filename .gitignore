@@ -4,6 +4,6 @@
 *.exe
 main
 *csv
-
+*.out
 # Local History for Visual Studio Code
 .history/
