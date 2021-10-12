@@ -498,7 +498,9 @@ void SingletonTable::ExecuteCommand(const std::string& command){
     }else if(commandType == "delete"){
         Delete(param);     
     }else if(commandType == "insert"){
-        Insert(param);   
+        Insert(param);
+    }else if(commandType == "swap"){
+        Swap(param);   
     }else if(command == "exit"){
         Exit();
     }else if(commandType == "save"){
@@ -540,3 +542,78 @@ SingletonTable *SingletonTable::GetInstance(int counter, char** arguments)
     }
     return SingletonTable_;
 }
+
+struct Address{
+    unsigned row;
+    unsigned col;
+};
+
+void SingletonTable::Swap(const std::string &attrs){
+    int errorCode = 0;
+    std::string tmp;
+    Address adrs_arr[2];
+    std::vector<std::string> parts;
+    SplitString(attrs,parts);
+    if(parts.size() < 2){
+        errorCode = 1;
+    }else if(parts.size() > 2){
+        errorCode = 2;
+    }else{
+        for(unsigned adrs_i=0; adrs_i < parts.size() ; adrs_i++ ){
+            char col_chr= std::toupper(parts[adrs_i][0]);
+            if ((col_chr > 'Z' ) || (col_chr < 'A') ){
+                errorCode=3;
+                break;
+            }
+            for(unsigned i = 1; i< parts[adrs_i].length();i++){
+                if(!isdigit(parts[adrs_i][i])){
+                    errorCode = 3;
+                    break;
+                }
+            }   
+        }
+    }
+        if(errorCode == 0){
+            char col_chr;
+            std::string row_st;
+            for (unsigned int adrs_i=0; adrs_i<parts.size(); adrs_i++){
+                col_chr=(char) std::toupper(parts[adrs_i][0]);
+                adrs_arr[adrs_i].col=(unsigned) (col_chr - 'A') ;
+                if (adrs_arr[adrs_i].col > table_.size()-1){
+                    errorCode=4;
+                    break;
+                }
+                row_st="";
+                for (unsigned i=1; parts[adrs_i].length();i++){
+                    row_st += parts[adrs_i][i];
+                }
+                adrs_arr[adrs_i].row=(unsigned) std::stoi(row_st);
+                if (adrs_arr[adrs_i].row > table_[adrs_arr[adrs_i].col].size()-1){
+                    errorCode=4;
+                    break;
+                }
+            }
+        }
+
+    switch (errorCode){
+    case 1:
+        SetError("Missing attributes!");
+        break;
+    case 2:
+        SetError("Too much attributes!");
+        break;
+    case 3:
+        SetError("Wrong address format! Use adresses like: \"A1\" !");
+        break;
+    case 4:
+        SetError("Cell is out of range!");
+        break;
+    case 0:
+        tmp = table_[adrs_arr[0].col][adrs_arr[0].row];
+        table_[adrs_arr[0].col][adrs_arr[0].row] = table_[adrs_arr[1].col][adrs_arr[1].row];
+        table_[adrs_arr[1].col][adrs_arr[1].row] = tmp;
+        break;
+    default:
+        break;
+    }
+} 

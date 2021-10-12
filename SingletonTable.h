@@ -32,6 +32,7 @@ protected:
     void SetError(const std::string&);
     void SplitString(const std::string&, std::vector<std::string>&);
     void SetIsOn(bool);
+    void Swap(const std::string&);
 
 public:
     SingletonTable(SingletonTable&) = delete;
