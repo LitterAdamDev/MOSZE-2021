@@ -4,6 +4,7 @@
 *.exe
 main
 *csv
+!example.csv
 
 # Local History for Visual Studio Code
 .history/

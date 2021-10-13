@@ -132,6 +132,7 @@ void SingletonTable::PrintTable(){
             }else{
                 std::cout.width(1);
             }
+            std::cout.setf(std::ios_base::fmtflags(table_[r][c].GetAlign()),std::ios::adjustfield);
             std::cout << table_[r][c].GetValue();
         }
         std::cout<< "|" <<std::endl;
@@ -440,6 +441,77 @@ void SingletonTable::Exit(){
 void SingletonTable::Align(const std::string &attrs){
     std::vector<std::string> parts;
     SplitString(attrs,parts);
+    if(parts.size() == 2){
+        int pos = parts[0].find(':');
+        if(pos != -1){
+            if(parts[1] == "left" || parts[1] == "right"){
+                std::string firstCell = parts[0].substr(0,pos);
+                std::string secondCell = parts[0].substr(pos+1,parts[0].length());
+                if(
+                    isalpha(firstCell[0]) &&
+                    is_number(firstCell.substr(1,firstCell.length())) &&
+                    isalpha(secondCell[0]) &&
+                    is_number(secondCell.substr(1,secondCell.length()))
+                ){
+                    int topLeftRow;
+                    int topLeftCol;
+                    int bottomRightRow;
+                    int bottomRightCol;
+                    if(firstCell == secondCell){
+                        int col = int(std::toupper(firstCell[0]) - 'A');
+                        int row = stoi(firstCell.substr(1,firstCell.length()));
+                        if(parts[1] == "left"){
+                            table_[row-1][col].SetAlign(std::ios::left);
+                        }else{
+                            table_[row-1][col].SetAlign(std::ios::right);
+                        }
+                    }else{
+                        topLeftRow = stoi(firstCell.substr(1,firstCell.length())) < stoi(secondCell.substr(1,secondCell.length()))?
+                        stoi(firstCell.substr(1,firstCell.length())) : stoi(secondCell.substr(1,secondCell.length()));
+                        bottomRightRow = stoi(firstCell.substr(1,firstCell.length())) > stoi(secondCell.substr(1,secondCell.length()))?
+                        stoi(firstCell.substr(1,firstCell.length())) : stoi(secondCell.substr(1,secondCell.length()));
+                        topLeftCol = int(std::toupper(firstCell[0]) - 'A') < int(std::toupper(secondCell[0]) - 'A')?
+                        int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
+                        bottomRightCol = int(std::toupper(firstCell[0]) - 'A') > int(std::toupper(secondCell[0]) - 'A')?
+                        int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
+                        for(unsigned r = topLeftRow; r <= bottomRightRow; r++){
+                            for(unsigned c = topLeftCol; c <= bottomRightCol; c++){
+                                std::cout << table_[r-1][c].GetValue() << std::endl;
+                                if(parts[1] == "left"){
+                                    table_[r-1][c].SetAlign(std::ios::left);
+                                }else{
+                                    table_[r-1][c].SetAlign(std::ios::right);
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    SetError("Wrong position attributes!");
+                }
+            }else{
+                SetError("The second parameter must be one of the\"right\" or the\"left\" values!");
+            }
+        }else{
+            if(isalpha(parts[0][0]) && is_number(parts[0].substr(1,parts[0].length()))){
+                int col = int(std::toupper(parts[0][0]) - 'A');
+                int row = stoi(parts[0].substr(1,parts[0].length()));
+                if(parts[1] == "left" || parts[1] == "right"){
+                    std::cout<< "Row: " << row << ", Col: " << col << ", Align: " << parts[1] << std::endl;
+                    if(parts[1] == "left"){
+                        table_[row-1][col].SetAlign(std::ios::left);
+                    }else{
+                        table_[row-1][col].SetAlign(std::ios::right);
+                    }
+                }else{
+                    SetError("The second parameter must be one of the\"right\" or the\"left\" values!");
+                }
+            }else{
+                SetError("Wrong position attribute!");
+            }
+        }
+    }else{
+        SetError("Wrong attributes!");
+    }
 }
 void SingletonTable::Clear(const std::string &attrs){
     std::vector<std::string> parts;
@@ -551,4 +623,9 @@ SingletonTable *SingletonTable::GetInstance(int counter, char** arguments)
         }
     }
     return SingletonTable_;
+}
+bool SingletonTable::is_number(const std::string& s){
+    std::string::const_iterator it = s.begin();
+    while (it != s.end() && std::isdigit(*it)) ++it;
+    return !s.empty() && it == s.end();
 }

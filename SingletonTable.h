@@ -33,7 +33,6 @@ typedef std::vector<std::vector<Cell>> Table;
 
 class SingletonTable
 {
-
 protected:
     SingletonTable();
     SingletonTable(std::string);
@@ -55,7 +54,7 @@ protected:
     void SetIsOn(bool);
     void Align(const std::string&);
     void Clear(const std::string&);
-
+    bool is_number(const std::string& );
 public:
     SingletonTable(SingletonTable&) = delete;
     void operator=(const SingletonTable&) = delete;
