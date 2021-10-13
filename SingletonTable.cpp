@@ -631,6 +631,8 @@ void SingletonTable::ExecuteCommand(const std::string& command){
         Clear(param);
     }else if(commandType == "align"){
         Align(param);
+    }else if(commandType == "sort"){
+        Sort(param);
     }else{
         SetError("There is no command with the name \"" + commandType + "\"!");
     }

@@ -56,7 +56,8 @@ protected:
     void Clear(const std::string&);
     bool is_number(const std::string& );
     void Swap(const std::string&);
-
+    void Sort(const std::string&);
+    
 public:
     SingletonTable(SingletonTable&) = delete;
     void operator=(const SingletonTable&) = delete;
