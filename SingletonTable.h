@@ -8,7 +8,28 @@
 #include <fstream>
 #include <sstream>
 
-typedef std::vector<std::vector<std::string> > Table;
+struct Cell{
+private:
+    int align_ = std::ios::left;
+    std::string value_ = "";
+
+public:
+    Cell(){}
+    Cell(std::string value, int align = std::ios::left):align_{align},value_{value}{}
+    int GetAlign() const{
+        return align_;
+    }
+    std::string GetValue() const{
+        return value_;
+    }
+    void SetAlign(int align){
+        this->align_ = align;
+    }
+    void SetValue(std::string value){
+        this->value_ = value;
+    }
+};
+typedef std::vector<std::vector<Cell>> Table;
 
 class SingletonTable
 {

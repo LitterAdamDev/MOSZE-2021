@@ -1,6 +1,6 @@
 #include "SingletonTable.h"
 
-SingletonTable::SingletonTable(): table_{{""}},error_{""}, isOn{true}{}
+SingletonTable::SingletonTable(): table_{{Cell()}},error_{""}, isOn{true}{}
 
 SingletonTable::SingletonTable(std::string filename): error_{""}, isOn{true}{
    
@@ -23,7 +23,7 @@ SingletonTable::SingletonTable(std::string filename): error_{""}, isOn{true}{
         rows.push_back(line);
     }
     for(auto r : rows){
-        std::vector<std::string> actRow;
+        std::vector<Cell> actRow;
         std::string actLine = r;
         std::string actCell = "";
         for(unsigned ch = 0; ch < actLine.length(); ch++){
@@ -31,12 +31,12 @@ SingletonTable::SingletonTable(std::string filename): error_{""}, isOn{true}{
                 actCell+=actLine[ch];
             }
             else{
-                actRow.push_back(actCell);
+                actRow.push_back(Cell(actCell));
                 actCell = "";
             }
         }
         while(actRow.size() < maxCols+1){
-            actRow.push_back("");
+            actRow.push_back(Cell());
         }
         table_.push_back(actRow);
     }
@@ -63,7 +63,7 @@ SingletonTable::SingletonTable(std::string filename,std::string separator): erro
         rows.push_back(line);
     }
     for(auto r : rows){
-        std::vector<std::string> actRow;
+        std::vector<Cell> actRow;
         std::string actLine = r;
         std::string actCell = "";
         for(unsigned ch = 0; ch < actLine.length(); ch++){
@@ -71,12 +71,12 @@ SingletonTable::SingletonTable(std::string filename,std::string separator): erro
                 actCell+=actLine[ch];
             }
             else{
-                actRow.push_back(actCell);
+                actRow.push_back(Cell(actCell));
                 actCell = "";
             }
         }
         while(actRow.size() < maxCols+1){
-            actRow.push_back("");
+            actRow.push_back(Cell());
         }
         table_.push_back(actRow);
     }
@@ -95,8 +95,8 @@ void SingletonTable::PrintTable(){
     std::vector<int> columnLengths(table_[0].size(),0);
     for(unsigned r = 0; r < table_.size();r++){
         for(unsigned c = 0; c < table_[r].size();c++){
-            if(table_[r][c].length() > columnLengths[c])
-                columnLengths[c] = table_[r][c].length();
+            if(table_[r][c].GetValue().length() > columnLengths[c])
+                columnLengths[c] = table_[r][c].GetValue().length();
         }
     }
     std::cout.setf(std::ios::left);
@@ -132,7 +132,7 @@ void SingletonTable::PrintTable(){
             }else{
                 std::cout.width(1);
             }
-            std::cout << table_[r][c];
+            std::cout << table_[r][c].GetValue();
         }
         std::cout<< "|" <<std::endl;
         std::cout << rowSeparator << std::endl;
@@ -183,7 +183,7 @@ void SingletonTable::Edit(const std::string &attrs){
             }
             if((table_.size() > row) && (row != -1)){
                 if(table_[row].size() > col){
-                    table_[row][col] = str;
+                    table_[row][col].SetValue(str);
                 }else{
                     SetError("There are only " + std::to_string(table_[row].size()) + " columns in this table.");
                 }
@@ -229,11 +229,11 @@ void SingletonTable::Add(const std::string &attrs){
     case 0:
         if(parts[1] == "rows"){
             for(unsigned i = 0; i < stoi(parts[0]);i++)
-                table_.push_back(std::vector<std::string>(table_[0].size(),""));
+                table_.push_back(std::vector<Cell>(table_[0].size(),Cell()));
         }else{
             for(unsigned i = 0; i < stoi(parts[0]);i++)
                 for(unsigned j = 0; j < table_.size(); j++)
-                    table_[j].push_back("");
+                    table_[j].push_back(Cell());
         }
         break;
     default:
@@ -300,14 +300,14 @@ void SingletonTable::Delete(const std::string &attrs){
         if(row != -1){
             if((row == 1) && (table_.size() == 1)){
                 for(unsigned i = 0; i < table_[0].size(); i++)
-                    table_[0][i] = "";
+                    table_[0][i].SetValue("");
             }else{
                 table_.erase(table_.begin() + row-1);
             }
         }else{
             if((table_[0].size() == 1) && (col == 0)){
                 for(unsigned i = 0; i < table_.size(); i++)
-                    table_[i][0] = "";
+                    table_[i][0].SetValue("");
             }else{
                 for(unsigned i = 0; i < table_.size(); i++)
                     table_[i].erase(table_[i].begin() + col);
@@ -406,26 +406,26 @@ void SingletonTable::Insert(const std::string &attrs){
         if(type == "rows"){
             if(parts[2] == "before")
                 for(unsigned i = 0; i < counter; i++)
-                    table_.insert(table_.begin()+(position-1),std::vector<std::string>(table_[0].size(),""));
+                    table_.insert(table_.begin()+(position-1),std::vector<Cell>(table_[0].size(),Cell()));
             if(parts[2] == "after"){
                 if(position > table_.size()){
                     for(unsigned i = 0; i < counter; i++)
-                        table_.push_back(std::vector<std::string>(table_[0].size(),""));
+                        table_.push_back(std::vector<Cell>(table_[0].size(),Cell()));
                 }else{
                     for(unsigned i = 0; i < counter; i++)
-                        table_.insert(table_.begin()+(position),std::vector<std::string>(table_[0].size(),""));
+                        table_.insert(table_.begin()+(position),std::vector<Cell>(table_[0].size(),Cell()));
                 }
             }
         }else{
             if(parts[2] == "before")
                 for(unsigned j = 0; j < counter; j++)
                     for(unsigned i = 0; i < table_.size(); i++)
-                        table_[i].insert(table_[i].begin()+(position),"");
+                        table_[i].insert(table_[i].begin()+(position),Cell());
             
             if(parts[2] == "after")
                 for(unsigned j = 0; j < counter; j++)
                         for(unsigned i = 0; i < table_.size(); i++)
-                            table_[i].insert(table_[i].begin()+(position+1),"");
+                            table_[i].insert(table_[i].begin()+(position+1),Cell());
         }
         break;
     default:
@@ -438,10 +438,12 @@ void SingletonTable::Exit(){
     std::cout << "Folyamat megszakítva..." << std::endl;
 }
 void SingletonTable::Align(const std::string &attrs){
-
+    std::vector<std::string> parts;
+    SplitString(attrs,parts);
 }
 void SingletonTable::Clear(const std::string &attrs){
-
+    std::vector<std::string> parts;
+    SplitString(attrs,parts);
 }
 void SingletonTable::Save(const std::string &attrs){
 
@@ -468,7 +470,7 @@ void SingletonTable::Save(const std::string &attrs){
         std::ofstream out(parts[0]);
         for(unsigned r = 0; r < table_.size(); r++){
             for(unsigned c = 0; c < table_[0].size(); c++){
-                out << table_[r][c];
+                out << table_[r][c].GetValue();
                 if(c != table_[r].size()-1)
                     out<< separator;
             }
