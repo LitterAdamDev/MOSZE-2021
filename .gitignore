@@ -5,6 +5,6 @@
 main
 *csv
 !example.csv
-
+*.out
 # Local History for Visual Studio Code
 .history/
