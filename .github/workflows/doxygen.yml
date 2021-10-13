@@ -21,4 +21,4 @@ jobs:
         ref: gh-pages
     - name: make pdf
       working-directory:  ./latex
-      run: pdflatex refman
+      run: make
