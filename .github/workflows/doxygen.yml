@@ -20,8 +20,5 @@ jobs:
       with:
         ref: gh-pages
     - name: make pdf
-    
-    defaults:
-      run:
-        working-directory:  ./latex
-    - run: pdflatex refman
+      working-directory:  ./latex
+      run: pdflatex refman
