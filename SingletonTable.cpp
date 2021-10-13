@@ -681,7 +681,7 @@ struct Address{
 
 void SingletonTable::Swap(const std::string &attrs){
     int errorCode = 0;
-    std::string tmp;
+    Cell tmp;
     Address adrs_arr[2];
     std::vector<std::string> parts;
     SplitString(attrs,parts);
@@ -739,9 +739,9 @@ void SingletonTable::Swap(const std::string &attrs){
         SetError("Cell is out of range!");
         break;
     case 0:
-        tmp = table_[adrs_arr[0].row -1][adrs_arr[0].col -1];
-        table_[adrs_arr[0].row -1][adrs_arr[0].col -1] = table_[adrs_arr[1].row -1][adrs_arr[1].col -1];
-        table_[adrs_arr[1].row -1][adrs_arr[1].col -1] = tmp;
+        tmp.SetValue(table_[adrs_arr[0].row -1][adrs_arr[0].col -1].GetValue());
+        table_[adrs_arr[0].row -1][adrs_arr[0].col -1].SetValue(table_[adrs_arr[1].row -1][adrs_arr[1].col -1].GetValue());
+        table_[adrs_arr[1].row -1][adrs_arr[1].col -1].SetValue(tmp.GetValue());
         break;
     default:
         break;
