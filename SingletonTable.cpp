@@ -476,7 +476,6 @@ void SingletonTable::Align(const std::string &attrs){
                         int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
                         for(unsigned r = topLeftRow; r <= bottomRightRow; r++){
                             for(unsigned c = topLeftCol; c <= bottomRightCol; c++){
-                                std::cout << table_[r-1][c].GetValue() << std::endl;
                                 if(parts[1] == "left"){
                                     table_[r-1][c].SetAlign(std::ios::left);
                                 }else{
@@ -516,6 +515,49 @@ void SingletonTable::Align(const std::string &attrs){
 void SingletonTable::Clear(const std::string &attrs){
     std::vector<std::string> parts;
     SplitString(attrs,parts);
+    if(parts.size() == 1){
+        int pos = parts[0].find(':');
+        if(pos != -1){
+            std::string firstCell = parts[0].substr(0,pos);
+            std::string secondCell = parts[0].substr(pos+1,parts[0].length());
+            if(
+                isalpha(firstCell[0]) &&
+                is_number(firstCell.substr(1,firstCell.length())) &&
+                isalpha(secondCell[0]) &&
+                is_number(secondCell.substr(1,secondCell.length()))
+            ){
+                int topLeftRow;
+                int topLeftCol;
+                int bottomRightRow;
+                int bottomRightCol;
+                if(firstCell == secondCell){
+                    int col = int(std::toupper(firstCell[0]) - 'A');
+                    int row = stoi(firstCell.substr(1,firstCell.length()));
+                    table_[row-1][col].SetValue("");
+                }else{
+                    topLeftRow = stoi(firstCell.substr(1,firstCell.length())) < stoi(secondCell.substr(1,secondCell.length()))?
+                    stoi(firstCell.substr(1,firstCell.length())) : stoi(secondCell.substr(1,secondCell.length()));
+                    bottomRightRow = stoi(firstCell.substr(1,firstCell.length())) > stoi(secondCell.substr(1,secondCell.length()))?
+                    stoi(firstCell.substr(1,firstCell.length())) : stoi(secondCell.substr(1,secondCell.length()));
+                    topLeftCol = int(std::toupper(firstCell[0]) - 'A') < int(std::toupper(secondCell[0]) - 'A')?
+                    int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
+                    bottomRightCol = int(std::toupper(firstCell[0]) - 'A') > int(std::toupper(secondCell[0]) - 'A')?
+                    int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
+                    for(unsigned r = topLeftRow; r <= bottomRightRow; r++){
+                        for(unsigned c = topLeftCol; c <= bottomRightCol; c++){
+                            table_[r-1][c].SetValue("");
+                        }
+                    }
+                }
+            }else{
+                SetError("Wrong position attributes!");
+            }
+        }else{
+            SetError("Wrong range parameter format!");
+        }
+    }else{
+        SetError("Wrong attributes!");
+    }
 }
 void SingletonTable::Save(const std::string &attrs){
 
