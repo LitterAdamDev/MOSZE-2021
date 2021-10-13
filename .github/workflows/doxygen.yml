@@ -18,6 +18,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: actions/checkout@v2
       with:
-        ref: gh-pages
-    - run: pdflatex latex/refman
+        ref: gh-pages/latex
+    - run: pdflatex refman
    
