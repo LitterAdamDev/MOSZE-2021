@@ -57,6 +57,9 @@ protected:
     bool is_number(const std::string& );
     void Swap(const std::string&);
     void Sort(const std::string&);
+    std::string& string_toupper(std::string& myst);
+    std::string& string_toupper(std::string&& myst);
+
     
 public:
     SingletonTable(SingletonTable&) = delete;

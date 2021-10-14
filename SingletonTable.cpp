@@ -749,3 +749,37 @@ void SingletonTable::Swap(const std::string &attrs){
         break;
     }
 } 
+
+enum SortType {
+    asc=1,
+    desc=0
+};
+
+enum SortBy{
+    sortByCol=1,
+    sortByRow=0
+};
+
+std::string& SingletonTable::string_toupper(std::string& myst){
+    //Only English alphabet a - z
+    for (unsigned i=0; i<myst.length(); i++){
+        for (char& ch : myst){
+            if ( ( ch >= 'a' ) && ( ch <= 'z' ) ) {
+                ch=std::toupper(ch);
+            }
+        }
+    }
+    return myst;
+}
+std::string& SingletonTable::string_toupper(std::string&& myst){
+    //Only English alphabet a - z
+    for (unsigned i=0; i<myst.length(); i++){
+        for (char& ch : myst){
+            if ( ( ch >= 'a' ) && ( ch <= 'z' ) ) {
+                ch=std::toupper(ch);
+            }
+        }
+    }
+    return myst;
+}
+
