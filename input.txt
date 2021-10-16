@@ -1,0 +1,7 @@
+add 2 rows
+delete a
+delete 4
+insert 2 cols after a
+edit c5 valami
+edit c3 valami
+exit
