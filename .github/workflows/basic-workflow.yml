@@ -11,8 +11,9 @@ jobs:
         run: g++ -Wall SingletonTable.cpp main.cpp -o main
       - name: Check g++ version
         run: echo | g++ --version
-      - name: Run input-output tests
+      - name: Convert files
         run: sed -i 's/\r//g' ./run_test.sh
+      - name: Run input-output tests
         run: bash run_test.sh main generated_output.txt
       - name: Check result of input-output tests
         run: diff ./generated_output.txt ./expected_output.txt
