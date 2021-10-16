@@ -10,8 +10,8 @@ jobs:
     - run: sudo apt install doxygen graphviz texlive-latex-extra
     - run: doxygen doxyconf 
     - name: make pdf from latex
-      working-directory:  docs/latex/
-      run: make
+    
+      run: make docs/latex/
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
