@@ -9,11 +9,15 @@ jobs:
     - uses: actions/checkout@v2
     - run: sudo apt install doxygen graphviz texlive
     - run: doxygen doxyconf 
+    - name: make pdf from latex
+      working-directory:  ./latex
+      run: pdflatex refman
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
         name: doxygen
-        path: ./
+        path: docs/
+        
     - name: Push git subdir as a branch
       uses: s0/git-publish-subdir-action@v2.4.0
       env:
@@ -30,6 +34,4 @@ jobs:
     
     
     
-    - name: make pdf from latex
-      working-directory:  ./latex
-      run: pdflatex refman
+    
