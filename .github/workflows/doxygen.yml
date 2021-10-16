@@ -16,9 +16,19 @@ jobs:
         BRANCH: gh-pages
         FOLDER: docs/
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+   
     - uses: actions/checkout@v2
       with:
-        ref: gh-pages
-    - name: make pdf
+        ref: gh-pages 
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: doxygen
+        path: docs/
+    
+    
+    
+    - name: make pdf from latex
       working-directory:  ./latex
-      run: make
+      run: pdflatex refman
