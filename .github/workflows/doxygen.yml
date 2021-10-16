@@ -26,10 +26,7 @@ jobs:
         FOLDER: docs/
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
    
-   - uses: actions/checkout@v2
-      with:
-        ref: gh-pages 
-
+ 
     
     
     
