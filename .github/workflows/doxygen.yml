@@ -10,8 +10,7 @@ jobs:
     - run: sudo apt install doxygen graphviz texlive
     - run: doxygen doxyconf 
     - name: make pdf from latex
-      working-directory:  docs/latex/
-      run: pdflatex refman
+      run: pdflatex docs/latex/refman
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
