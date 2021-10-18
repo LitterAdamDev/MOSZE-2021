@@ -6,5 +6,7 @@ main
 *csv
 generated_output.txt
 
+!example.csv
+*.out
 # Local History for Visual Studio Code
 .history/
