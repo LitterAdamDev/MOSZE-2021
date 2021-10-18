@@ -5,6 +5,8 @@
 main
 *csv
 generated_output.txt
+/docs
+.log
 
 !example.csv
 *.out

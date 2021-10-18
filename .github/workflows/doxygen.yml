@@ -1,0 +1,34 @@
+name: Documentation
+
+on: [push, pull_request]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: sudo apt install doxygen graphviz texlive-latex-extra
+    - run: doxygen doxyconf 
+    - name: make pdf from latex
+      working-directory:  docs/latex/
+      run: make
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: doxygen
+        path: docs/
+
+    - name: Push git subdir as a branch
+      uses: s0/git-publish-subdir-action@v2.4.0
+      env:
+        REPO: self
+        BRANCH: gh-pages
+        FOLDER: docs/
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+   
+ 
+    
+    
+    
+    
+    
