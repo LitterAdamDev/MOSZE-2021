@@ -757,7 +757,8 @@ void SingletonTable::Sort(const std::string &attrs){
     SortType stype;
     SortBy sby;
     unsigned col_row_num;
-    std::vector<Cell&> col_vec;
+    Cell tmp;
+    std::vector<Cell> col_vec;
     //Check argument count
     if(parts.size() < 2){
         errorCode = 1;
@@ -835,23 +836,29 @@ void SingletonTable::Sort(const std::string &attrs){
         break;
     case 0:
         if (sby==sortByRow){
-            std::sort(table_[col_row_num-1].begin(),table_[col_row_num-1].end(),[] (const Cell& a, const Cell& b, SortType stype) -> bool {
-                if (stype==asc) {
-                    return a>b;
+            for (unsigned i=0; i<table_[col_row_num-1].size();i++){
+                for (unsigned index=0; index<=table_[col_row_num-1].size()-2; index++){
+                    if (compare_func(table_[col_row_num-1][index], table_[col_row_num-1][index+1],stype)){
+                        tmp=table_[col_row_num-1][index];
+                        table_[col_row_num-1][index]=table_[col_row_num-1][index+1];
+                        table_[col_row_num-1][index+1]=tmp;
+                    }
                 }
-                return a<b;
-            });
+            }
         }
         else{
             for (auto& row_vec : table_){
                 col_vec.push_back(row_vec[col_row_num-1]);
             }
-            std::sort(col_vec.begin(), col_vec.end(), [] (const Cell& a, const Cell& b, SortType stype) -> bool {
-                if (stype==asc) {
-                    return a>b;
+            for (unsigned i=0; i<col_vec.size();i++){
+                for (unsigned index=0; index<=col_vec.size()-2; index++){
+                    if (compare_func(col_vec[index], col_vec[index+1],stype)){
+                        tmp=col_vec[index];
+                        col_vec[index]=col_vec[index+1];
+                        col_vec[index+1]=tmp;
+                    }
                 }
-                return a<b;
-            });
+            }
             for (unsigned i=0; i<col_vec.size();i++){
                 //kell assignment operator a cell classban
                 table_[i][col_row_num-1]=col_vec[i];
@@ -915,10 +922,10 @@ std::string& SingletonTable::string_toupper(std::string&& myst){
     }
     return myst;
 }
-bool SingletonTable::compare_func(Cell& a, Cell& b, SortType stype){
-    // make operator overload <, > in Cell class
-    if (stype=asc){
-        return a > b;
+
+bool SingletonTable::compare_func(const Cell& a,const Cell& b, const SortType& stype){
+    if (stype==asc) {
+        return a>b;
     }
-    return a < b;
+    return a<b;
 }

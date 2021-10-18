@@ -88,6 +88,6 @@ public:
     std::string PrintError();
     bool GetIsOn() const;
     static bool is_number(const std::string& );
-    static bool compare_func(Cell&, Cell&, SortType);
+    bool compare_func(const Cell& a,const Cell& b, const SortType& stype);
     friend class Cell;
 };
