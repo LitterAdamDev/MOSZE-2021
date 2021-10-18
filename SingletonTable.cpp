@@ -750,15 +750,148 @@ void SingletonTable::Swap(const std::string &attrs){
     }
 } 
 
-enum SortType {
-    asc=1,
-    desc=0
-};
+void SingletonTable::Sort(const std::string &attrs){
+    int errorCode = 0;
+    std::vector<std::string> parts;
+    SplitString(attrs,parts);
+    SortType stype;
+    SortBy sby;
+    unsigned col_row_num;
+    std::vector<Cell&> col_vec;
+    //Check argument count
+    if(parts.size() < 2){
+        errorCode = 1;
+    }else if(parts.size() > 3){
+        errorCode = 2;
+    }else{
+        //make all parts' string uppercase
+        for (unsigned i=0; i<parts.size(); i++){
+            string_toupper(parts[i]);
+        }
+        //check first argument
+        if (parts[0] != "BY") errorCode=3;
+        if (errorCode==0){
+            //check second argument
+            if ((parts[1].length()==1) && ((parts[1][0] >= 'A') && (parts[1][0] <= 'Z') )){
+                sby=sortByCol;
+                col_row_num=parts[1][0] - 'A' + 1;
+            }
+            else if (is_number(parts[1])) {
+                sby=sortByRow;
+                col_row_num=std::stoi(parts[1]);
+            }
+            else {
+                errorCode=4;
+            }
+        }
+        //check that second argument's col/row exists
+        if (errorCode==0){
+            if(sby==sortByRow){
+                if ((col_row_num > table_.size())  || (col_row_num<=0))
+                    errorCode=5;
+            }
+            else {
+                //only if each row vector is the same size
+                if (col_row_num > table_[0].size()){
+                    errorCode=5;
+                }
+            }
+        }
+        //check third argument, if missing use ASC sorting later
+        if(errorCode == 0){
+            //parts.szie() can only be 2 or 3 at this point
+            if (parts.size()==2){
+                stype=asc;
+            }
+            else if (parts[2]=="ASC"){
+                stype=asc;
+            }
+            else if (parts[2]=="DESC"){
+                stype=desc;
+            }
+            else {
+                errorCode=6;
+            }
+        }
 
-enum SortBy{
-    sortByCol=1,
-    sortByRow=0
-};
+    switch (errorCode){
+    case 1:
+        SetError("Missing attributes!");
+        break;
+    case 2:
+        SetError("Too much attributes!");
+        break;
+    case 3:
+        SetError("First argument must be \"BY\" !");
+        break;
+    case 4:
+        SetError("Invalid row/col format!");
+        break;
+    case 5:
+        SetError("Given column or row does'nt exist!");
+        break;
+    case 6:
+        SetError("Invalid sort type arguement, use \"asc\" or \"desc\" or leave blank (asc) !");
+        break;
+    case 0:
+        if (sby==sortByRow){
+            std::sort(table_[col_row_num-1].begin(),table_[col_row_num-1].end(),[] (const Cell& a, const Cell& b, SortType stype) -> bool {
+                if (stype==asc) {
+                    return a>b;
+                }
+                return a<b;
+            });
+        }
+        else{
+            for (auto& row_vec : table_){
+                col_vec.push_back(row_vec[col_row_num-1]);
+            }
+            std::sort(col_vec.begin(), col_vec.end(), [] (const Cell& a, const Cell& b, SortType stype) -> bool {
+                if (stype==asc) {
+                    return a>b;
+                }
+                return a<b;
+            });
+            for (unsigned i=0; i<col_vec.size();i++){
+                //kell assignment operator a cell classban
+                table_[i][col_row_num-1]=col_vec[i];
+            }
+        }
+        break;
+    default:
+        break;
+    }
+} 
+}
+
+bool operator<(const Cell& a,const Cell& b){
+    if(SingletonTable::is_number(a.GetValue()) && SingletonTable::is_number(b.GetValue())){
+        return std::stod(a.GetValue()) < std::stod(b.GetValue());
+    }
+    else if (!SingletonTable::is_number(a.GetValue()) && !SingletonTable::is_number(b.GetValue())){
+        return a.GetValue() < b.GetValue();
+    }
+    else if (SingletonTable::is_number(a.GetValue())){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+bool operator>(const Cell& a,const Cell& b){
+    if(SingletonTable::is_number(a.GetValue()) && SingletonTable::is_number(b.GetValue())){
+        return std::stod(a.GetValue()) > std::stod(b.GetValue());
+    }
+    else if (!SingletonTable::is_number(a.GetValue()) && !SingletonTable::is_number(b.GetValue())){
+        return a.GetValue() > b.GetValue();
+    }
+    else if (SingletonTable::is_number(a.GetValue())){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
 
 std::string& SingletonTable::string_toupper(std::string& myst){
     //Only English alphabet a - z
@@ -782,4 +915,10 @@ std::string& SingletonTable::string_toupper(std::string&& myst){
     }
     return myst;
 }
-
+bool SingletonTable::compare_func(Cell& a, Cell& b, SortType stype){
+    // make operator overload <, > in Cell class
+    if (stype=asc){
+        return a > b;
+    }
+    return a < b;
+}

@@ -8,7 +8,7 @@
 #include <fstream>
 #include <sstream>
 
-struct Cell{
+class Cell{
 private:
     int align_ = std::ios::left;
     std::string value_ = "";
@@ -16,6 +16,11 @@ private:
 public:
     Cell(){}
     Cell(std::string value, int align = std::ios::left):align_{align},value_{value}{}
+    Cell& operator=(Cell other){
+        align_=other.align_;
+        value_=other.value_;
+        return *this;
+    }
     int GetAlign() const{
         return align_;
     }
@@ -28,7 +33,12 @@ public:
     void SetValue(std::string value){
         this->value_ = value;
     }
+    friend bool operator<(const Cell& a,const Cell& b);
+    friend bool operator>(const Cell& a,const Cell& b);
 };
+
+
+
 typedef std::vector<std::vector<Cell>> Table;
 
 class SingletonTable
@@ -54,11 +64,19 @@ protected:
     void SetIsOn(bool);
     void Align(const std::string&);
     void Clear(const std::string&);
-    bool is_number(const std::string& );
     void Swap(const std::string&);
     void Sort(const std::string&);
+    enum SortType{
+        asc=1,
+        desc=0
+    };
+    enum SortBy{
+        sortByCol=1,
+        sortByRow=0
+    };
     std::string& string_toupper(std::string& myst);
     std::string& string_toupper(std::string&& myst);
+
 
     
 public:
@@ -69,4 +87,7 @@ public:
     void PrintTable();
     std::string PrintError();
     bool GetIsOn() const;
+    static bool is_number(const std::string& );
+    static bool compare_func(Cell&, Cell&, SortType);
+    friend class Cell;
 };
