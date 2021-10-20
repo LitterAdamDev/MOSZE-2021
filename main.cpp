@@ -2,6 +2,10 @@
 #include <string>
 #include "SingletonTable.h"
 
+/*! \brief main function.
+ *  The main function of the spreadsheet.
+ */
+
 int main(int argc, char **argv)
 {
     SingletonTable* singelton = SingletonTable::GetInstance(argc,argv);

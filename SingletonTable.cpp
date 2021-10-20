@@ -1,7 +1,13 @@
 #include "SingletonTable.h"
 
+/*! 
+ * constructor of SingletonTable class 
+ */
 SingletonTable::SingletonTable(): table_{{Cell()}},error_{""}, isOn{true}{}
 
+/*! \brief Constructor of SingletonTable class 
+ *  Reads the data from a file
+ */
 SingletonTable::SingletonTable(std::string filename): error_{""}, isOn{true}{
    
     std::string line;
@@ -43,6 +49,9 @@ SingletonTable::SingletonTable(std::string filename): error_{""}, isOn{true}{
     fin.close();
 }
 
+/*! \brief constructor of SingletonTable class 
+ *  Reads the data from a file
+ */
 SingletonTable::SingletonTable(std::string filename,std::string separator): error_{""}, isOn{true}{
     std::string line;
     std::fstream fin;
@@ -82,14 +91,24 @@ SingletonTable::SingletonTable(std::string filename,std::string separator): erro
     }
     fin.close();
 }
+
+/*!
+ *  \return the value of isOn  
+ */
 bool SingletonTable::GetIsOn() const{
     return isOn;
 }
 
+/*!
+ *  set the isOn with a value
+ */
 void SingletonTable::SetIsOn(bool value){
     this->isOn = value;
 }
 
+/*! \brief PrintTable:
+ *  Print the table
+ */
 void SingletonTable::PrintTable(){
     std::cout << "\n\n\n\n\n\n\n" << std::endl;
     std::vector<int> columnLengths(table_[0].size(),0);
@@ -140,12 +159,20 @@ void SingletonTable::PrintTable(){
     }
 }
 
+
+/*! \brief PrintError:
+ *  Print the error messages
+ *  \return tmp
+ */
 std::string SingletonTable::PrintError(){
     std::string tmp = error_;
     SetError("");
     return tmp;
 }
 
+/*! \brief SplitString:
+ *  Split the strings
+ */
 void SingletonTable::SplitString(const std::string& s, std::vector<std::string>& v){
 	std::string temp = "";
 	for(int i=0;i<s.length();++i){
@@ -160,6 +187,10 @@ void SingletonTable::SplitString(const std::string& s, std::vector<std::string>&
 	v.push_back(temp);
 }
 
+
+/*! \brief Edit:
+ *  Enter the specified string into the cell with XY coordinates
+ */
 void SingletonTable::Edit(const std::string &attrs){
     if(attrs != ""){
         std::string cell;
@@ -197,6 +228,9 @@ void SingletonTable::Edit(const std::string &attrs){
     }
 }
 
+/*! \brief Add rows/columns.
+ *  Adds N new rows / columns of empty cells to the end of the table
+ */
 void SingletonTable::Add(const std::string &attrs){
     int errorCode = 0;
     std::vector<std::string> parts;
@@ -241,6 +275,10 @@ void SingletonTable::Add(const std::string &attrs){
         break;
     }
 } 
+
+/*! \brief Delete row/column.
+ *  Deletes the column X (lettel) or row Y (number)
+ */
 void SingletonTable::Delete(const std::string &attrs){
     int errorCode = 0;
     int row = -1;
@@ -320,6 +358,9 @@ void SingletonTable::Delete(const std::string &attrs){
     }
 }
 
+/*! \brief Insert row/column.
+ *   Insert N new rows/columns of empty cells before/after a row/column
+ */
 void SingletonTable::Insert(const std::string &attrs){
     int errorCode = 0;
     std::string type = "";
@@ -434,10 +475,17 @@ void SingletonTable::Insert(const std::string &attrs){
     }
 }
 
+/*! 
+ *  Exit the running program
+ */
 void SingletonTable::Exit(){
     SetIsOn(false);
     std::cout << "Folyamat megszakítva..." << std::endl;
 }
+
+/*! \brief align left/right:
+ * Sets the content of the cell to be displayed left/right
+ */
 void SingletonTable::Align(const std::string &attrs){
     std::vector<std::string> parts;
     SplitString(attrs,parts);
@@ -512,6 +560,10 @@ void SingletonTable::Align(const std::string &attrs){
         SetError("Wrong attributes!");
     }
 }
+
+/*! \brief Clear the cells:
+ *  Sets the content of the cells to blank
+ */
 void SingletonTable::Clear(const std::string &attrs){
     std::vector<std::string> parts;
     SplitString(attrs,parts);
@@ -559,6 +611,11 @@ void SingletonTable::Clear(const std::string &attrs){
         SetError("Wrong attributes!");
     }
 }
+
+/*! \brief Save in file:
+ *  Print the current table to a file
+ *  If the specified file exists, overwrites the file
+ */
 void SingletonTable::Save(const std::string &attrs){
 
     std::vector<std::string> parts;
@@ -595,6 +652,9 @@ void SingletonTable::Save(const std::string &attrs){
     }
 }
 
+/*! \brief SetError:
+ *  --------------------------------------------------
+ */
 void SingletonTable::SetError(const std::string &command){
     if(command == ""){
         error_ = command;
@@ -603,6 +663,9 @@ void SingletonTable::SetError(const std::string &command){
     }
 }
 
+/*! \brief Execute the commands.
+ *  Checks which command is used and execute it
+ */
 void SingletonTable::ExecuteCommand(const std::string& command){
     std::string commandType;
 
@@ -638,8 +701,12 @@ void SingletonTable::ExecuteCommand(const std::string& command){
     }
 }
 
-SingletonTable *SingletonTable::SingletonTable_= nullptr;
 
+SingletonTable *SingletonTable::SingletonTable_= nullptr; /*!< Set the SingletonTable to nullptr */
+
+/*! \brief GetInstance:
+ *  ************************
+ */
 SingletonTable *SingletonTable::GetInstance(int counter, char** arguments)
 {
     if(SingletonTable_==nullptr){
@@ -670,20 +737,30 @@ SingletonTable *SingletonTable::GetInstance(int counter, char** arguments)
     }
     return SingletonTable_;
 }
+
+/*! \brief is_number:
+ *  **************************************
+ */
 bool SingletonTable::is_number(const std::string& s){
     std::string::const_iterator it = s.begin();
     while (it != s.end() && std::isdigit(*it)) ++it;
     return !s.empty() && it == s.end();
 }
 
+/*! 
+ *  struct for row and column address
+ */
 struct Address{
     unsigned row;
     unsigned col;
 };
 
+/*! \brief Swap:
+ *  swaps the contents of two cells
+ */
 void SingletonTable::Swap(const std::string &attrs){
     int errorCode = 0;
-    Cell tmp;
+    Cell tmp; 
     Address adrs_arr[2];
     std::vector<std::string> parts;
     SplitString(attrs,parts);
@@ -707,7 +784,7 @@ void SingletonTable::Swap(const std::string &attrs){
         }
     }
         if(errorCode == 0){
-            char col_chr;
+            char col_chr; 
             std::string row_st;
             for (unsigned int adrs_i=0; adrs_i<parts.size(); adrs_i++){
                 col_chr=(char) std::toupper(parts[adrs_i][0]);
@@ -750,6 +827,9 @@ void SingletonTable::Swap(const std::string &attrs){
     }
 } 
 
+/*! \brief Sort:
+ *  sorts the rows/columns in the table by the specified row/column in ascending / descending order
+ */ 
 void SingletonTable::Sort(const std::string &attrs){
     int errorCode = 0;
     std::vector<std::string> parts;
@@ -759,20 +839,20 @@ void SingletonTable::Sort(const std::string &attrs){
     unsigned col_row_num;
     Cell tmp;
     std::vector<Cell> col_vec;
-    //Check argument count
+    // Check argument count
     if(parts.size() < 2){
-        errorCode = 1;
+        errorCode = 1;  
     }else if(parts.size() > 3){
         errorCode = 2;
     }else{
-        //make all parts' string uppercase
+        // make all parts' string uppercase
         for (unsigned i=0; i<parts.size(); i++){
             string_toupper(parts[i]);
         }
-        //check first argument
+        // check first argument
         if (parts[0] != "BY") errorCode=3;
         if (errorCode==0){
-            //check second argument
+            // check second argument
             if ((parts[1].length()==1) && ((parts[1][0] >= 'A') && (parts[1][0] <= 'Z') )){
                 sby=sortByCol;
                 col_row_num=parts[1][0] - 'A' + 1;
@@ -785,22 +865,22 @@ void SingletonTable::Sort(const std::string &attrs){
                 errorCode=4;
             }
         }
-        //check that second argument's col/row exists
+        // check that second argument's col/row exists
         if (errorCode==0){
             if(sby==sortByRow){
                 if ((col_row_num > table_.size())  || (col_row_num<=0))
                     errorCode=5;
             }
             else {
-                //only if each row vector is the same size
+                // only if each row vector is the same size
                 if (col_row_num > table_[0].size()){
                     errorCode=5;
                 }
             }
         }
-        //check third argument, if missing use ASC sorting later
+        // check third argument, if missing use ASC sorting later
         if(errorCode == 0){
-            //parts.szie() can only be 2 or 3 at this point
+            // parts.size() can only be 2 or 3 at this point
             if (parts.size()==2){
                 stype=asc;
             }
@@ -814,7 +894,6 @@ void SingletonTable::Sort(const std::string &attrs){
                 errorCode=6;
             }
         }
-
     switch (errorCode){
     case 1:
         SetError("Missing attributes!");
@@ -860,7 +939,7 @@ void SingletonTable::Sort(const std::string &attrs){
                 }
             }
             for (unsigned i=0; i<col_vec.size();i++){
-                //kell assignment operator a cell classban
+                // kell assignment operator a cell classban
                 table_[i][col_row_num-1]=col_vec[i];
             }
         }
@@ -871,6 +950,9 @@ void SingletonTable::Sort(const std::string &attrs){
 } 
 }
 
+/*!  
+ *  operator overloading <
+ */
 bool operator<(const Cell& a,const Cell& b){
     if(SingletonTable::is_number(a.GetValue()) && SingletonTable::is_number(b.GetValue())){
         return std::stod(a.GetValue()) < std::stod(b.GetValue());
@@ -885,6 +967,9 @@ bool operator<(const Cell& a,const Cell& b){
         return true;
     }
 }
+/*! 
+ *  operator overloading >
+ */
 bool operator>(const Cell& a,const Cell& b){
     if(SingletonTable::is_number(a.GetValue()) && SingletonTable::is_number(b.GetValue())){
         return std::stod(a.GetValue()) > std::stod(b.GetValue());
@@ -900,8 +985,13 @@ bool operator>(const Cell& a,const Cell& b){
     }
 }
 
+/*! \brief toupper:
+ *  converts a given character to uppercase.
+ */
 std::string& SingletonTable::string_toupper(std::string& myst){
-    //Only English alphabet a - z
+    /*!
+    * Only English alphabet a - z
+    */
     for (unsigned i=0; i<myst.length(); i++){
         for (char& ch : myst){
             if ( ( ch >= 'a' ) && ( ch <= 'z' ) ) {
@@ -911,8 +1001,13 @@ std::string& SingletonTable::string_toupper(std::string& myst){
     }
     return myst;
 }
+/*! \brief toupper:
+ *  converts a given character to uppercase.
+ */
 std::string& SingletonTable::string_toupper(std::string&& myst){
-    //Only English alphabet a - z
+     /*!
+    * Only English alphabet a - z
+    */
     for (unsigned i=0; i<myst.length(); i++){
         for (char& ch : myst){
             if ( ( ch >= 'a' ) && ( ch <= 'z' ) ) {
@@ -923,6 +1018,10 @@ std::string& SingletonTable::string_toupper(std::string&& myst){
     return myst;
 }
 
+/*! \brief compare function:
+*  compares a and b 
+* \return the result of a>b or a<b
+*/
 bool SingletonTable::compare_func(const Cell& a,const Cell& b, const SortType& stype){
     if (stype==asc) {
         return a>b;
