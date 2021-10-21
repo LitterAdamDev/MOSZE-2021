@@ -17,8 +17,8 @@ private:
     std::string value_ = "";
 
 public:
-    Cell(){}
-    Cell(std::string value, int align = std::ios::left):align_{align},value_{value}{}   /*! constructor of Cell class */
+    Cell(){}        /*! constructor of Cell class */
+    Cell(std::string value, int align = std::ios::left):align_{align},value_{value}{}   
     Cell& operator=(Cell other){
         align_=other.align_;
         value_=other.value_;
