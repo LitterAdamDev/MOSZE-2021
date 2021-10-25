@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build the application
-        run: g++ -Wall SingletonTable.cpp main.cpp -o main
+        run: make
       - name: Check g++ version
         run: echo | g++ --version
       - name: Convert files
