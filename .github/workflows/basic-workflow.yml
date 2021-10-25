@@ -1,0 +1,24 @@
+name: basic workflow
+on: 
+  push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the application
+        run: make
+      - name: Check g++ version
+        run: echo | g++ --version
+      - name: Convert files
+        run: sed -i 's/\r//g' ./run_test.sh
+      - name: Run input-output tests
+        run: bash run_test.sh main generated_output.txt
+      - name: Check result of input-output tests
+        run: diff ./generated_output.txt ./expected_output.txt
+      - name: Upload generated output
+        uses: actions/upload-artifact@v2
+        with:
+          name: generated_output
+          path: generated_output.txt

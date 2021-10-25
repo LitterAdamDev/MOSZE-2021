@@ -2,9 +2,9 @@
 #include <string>
 #include "SingletonTable.h"
 
-int main()
+int main(int argc, char **argv)
 {
-    SingletonTable* singelton = SingletonTable::GetInstance();
+    SingletonTable* singelton = SingletonTable::GetInstance(argc,argv);
     while(singelton->GetIsOn()){
         std::cout << std::flush;
         std::string command;

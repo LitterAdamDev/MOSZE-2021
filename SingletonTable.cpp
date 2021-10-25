@@ -2,24 +2,140 @@
 
 SingletonTable::SingletonTable(): table_{{""}},error_{""}, isOn{true}{}
 
+SingletonTable::SingletonTable(std::string filename): error_{""}, isOn{true}{
+   
+    std::string line;
+    std::fstream fin;
+    fin.open(filename, std::ios::in);
+    std::vector<std::string> rows;
+    unsigned maxCols = 0;
+    while (getline(fin, line))
+    {
+        unsigned counter = 0;
+        for(auto ch : line){
+            if(ch == ';'){
+                counter+=1;
+                if(counter > maxCols){ 
+                    maxCols = counter;
+                }
+            }
+        }
+        rows.push_back(line);
+    }
+    for(auto r : rows){
+        std::vector<std::string> actRow;
+        std::string actLine = r;
+        std::string actCell = "";
+        for(unsigned ch = 0; ch < actLine.length(); ch++){
+            if(actLine[ch] != ';' && actLine.length() != (ch+1)){
+                actCell+=actLine[ch];
+            }
+            else{
+                actRow.push_back(actCell);
+                actCell = "";
+            }
+        }
+        while(actRow.size() < maxCols+1){
+            actRow.push_back("");
+        }
+        table_.push_back(actRow);
+    }
+    fin.close();
+}
+
+SingletonTable::SingletonTable(std::string filename,std::string separator): error_{""}, isOn{true}{
+    std::string line;
+    std::fstream fin;
+    fin.open(filename, std::ios::in);
+    std::vector<std::string> rows;
+    unsigned maxCols = 0;
+    while (getline(fin, line))
+    {
+        unsigned counter = 0;
+        for(auto ch : line){
+            if(ch == separator[0]){
+                counter+=1;
+                if(counter > maxCols){ 
+                    maxCols = counter;
+                }
+            }
+        }
+        rows.push_back(line);
+    }
+    for(auto r : rows){
+        std::vector<std::string> actRow;
+        std::string actLine = r;
+        std::string actCell = "";
+        for(unsigned ch = 0; ch < actLine.length(); ch++){
+            if(actLine[ch] != separator[0] && actLine.length() != (ch+1)){
+                actCell+=actLine[ch];
+            }
+            else{
+                actRow.push_back(actCell);
+                actCell = "";
+            }
+        }
+        while(actRow.size() < maxCols+1){
+            actRow.push_back("");
+        }
+        table_.push_back(actRow);
+    }
+    fin.close();
+}
 bool SingletonTable::GetIsOn() const{
     return isOn;
 }
+
 void SingletonTable::SetIsOn(bool value){
     this->isOn = value;
 }
+
 void SingletonTable::PrintTable(){
-    for(unsigned i = 0; i<table_[0].size();i++){
-        std::cerr << "\t" << (char)('A'+i);
-    }
-    std::cout<<std::endl;
-    unsigned rCounter = 1;
-    for(auto row : table_){
-        std::cerr << rCounter++;
-        for(auto cell : row){
-            std::cerr << "\t" << cell ;
+    std::cout << "\n\n\n\n\n\n\n" << std::endl;
+    std::vector<int> columnLengths(table_[0].size(),0);
+    for(unsigned r = 0; r < table_.size();r++){
+        for(unsigned c = 0; c < table_[r].size();c++){
+            if(table_[r][c].length() > columnLengths[c])
+                columnLengths[c] = table_[r][c].length();
         }
-        std::cout<<std::endl;
+    }
+    std::cout.setf(std::ios::left);
+    std::cout.width(std::to_string(table_.size()).length());
+    std::cout << "";
+    for(unsigned i = 0; i<table_[0].size();i++){
+        std::cout << "|";
+        std::cout.width(columnLengths[i]);
+        std::cout << (char)('A'+i);
+    }
+    int lengthOfRows = 0;
+    for(unsigned i = 0; i < columnLengths.size(); i++){
+        if(columnLengths[i] > 0){
+            lengthOfRows += columnLengths[i];
+        }else{
+            lengthOfRows += 1;
+        }
+    }
+    lengthOfRows += std::to_string(table_.size()).length() + table_[0].size()+1;
+    std::cout << "|" << std::endl;
+    std::string rowSeparator = "";
+    for(unsigned i = 0; i< lengthOfRows; i++){
+       rowSeparator += '-';
+    }
+    std::cout << rowSeparator << std::endl;
+    for(unsigned r = 0; r < table_.size();r++){
+        std::cout.width(std::to_string(table_.size()).length());
+        std::cout << r+1;
+        for(unsigned c = 0; c < table_[r].size();c++){
+            std::cout << "|";
+            if(columnLengths[c]>0){
+                std::cout.width(columnLengths[c]);
+            }else{
+                std::cout.width(1);
+            }
+            std::cout << table_[r][c];
+        }
+        std::cout<< "|" <<std::endl;
+        std::cout << rowSeparator << std::endl;
     }
 }
 
@@ -32,7 +148,6 @@ std::string SingletonTable::PrintError(){
 void SingletonTable::SplitString(const std::string& s, std::vector<std::string>& v){
 	std::string temp = "";
 	for(int i=0;i<s.length();++i){
-		
 		if(s[i]==' '){
 			v.push_back(temp);
 			temp = "";
@@ -40,7 +155,6 @@ void SingletonTable::SplitString(const std::string& s, std::vector<std::string>&
 		else{
 			temp.push_back(s[i]);
 		}
-		
 	}
 	v.push_back(temp);
 }
@@ -49,11 +163,10 @@ void SingletonTable::Edit(const std::string &attrs){
     if(attrs != ""){
         std::string cell;
         std::string str;
-        
         int pos = attrs.find(' ');
         if(pos != -1){
             cell = attrs.substr(0, pos);
-            str = attrs.substr(pos, attrs.length());
+            str = attrs.substr(pos+1, attrs.length());
             int col = int(std::toupper(cell[0]) - 'A');
             int row;
             std::string tmp = cell.substr(1,cell.length());
@@ -94,7 +207,7 @@ void SingletonTable::Add(const std::string &attrs){
     }else{
         for(unsigned i = 0; i< parts[0].length();i++)
             if(!isdigit(parts[0][i])) errorCode = 3;
-        
+
         if(errorCode == 0)
             if((parts[1] != "cols") && (parts[1] != "rows"))
                 errorCode = 4;
@@ -324,6 +437,41 @@ void SingletonTable::Exit(){
     SetIsOn(false);
     std::cout << "Folyamat megszakítva..." << std::endl;
 }
+void SingletonTable::Save(const std::string &attrs){
+
+    std::vector<std::string> parts;
+    SplitString(attrs,parts);
+    std::string separator = ";";
+    int errorCode = 0;
+    if(parts.size() == 1 || parts.size() == 3){
+        if(parts[0].length() >4 && parts[0].substr(parts[0].length()-4) == ".csv"){
+            if(parts.size() == 3){
+                if(parts[1] == "-sep" && parts[2].length() == 1){
+                    separator = parts[2];
+                }else{
+                    errorCode = -1;
+                }
+            }
+        }else{
+            errorCode = -1;
+        }
+    }else{
+        errorCode = -1;
+    }
+    if(errorCode == 0){
+        std::ofstream out(parts[0]);
+        for(unsigned r = 0; r < table_.size(); r++){
+            for(unsigned c = 0; c < table_[0].size(); c++){
+                out << table_[r][c];
+                if(c != table_[r].size()-1)
+                    out<< separator;
+            }
+            out << '\n';
+        }
+    }else{
+        SetError("Error at saving!");
+    }
+}
 
 void SingletonTable::SetError(const std::string &command){
     if(command == ""){
@@ -339,7 +487,7 @@ void SingletonTable::ExecuteCommand(const std::string& command){
     if(command.length() > 0)
         commandType = command.substr(0, command.find(' '));
         std::transform(commandType.begin(), commandType.end(), commandType.begin(),[](unsigned char c){ return std::tolower(c); });
-    
+       
     std::string param = command.substr(command.find(' ')+1,command.length());
     if (param.length() < 0)
         param = "";
@@ -353,6 +501,8 @@ void SingletonTable::ExecuteCommand(const std::string& command){
         Insert(param);   
     }else if(command == "exit"){
         Exit();
+    }else if(commandType == "save"){
+        Save(param);
     }else{
         SetError("There is no command with the name \"" + commandType + "\"!");
     }
@@ -360,10 +510,33 @@ void SingletonTable::ExecuteCommand(const std::string& command){
 
 SingletonTable *SingletonTable::SingletonTable_= nullptr;
 
-SingletonTable *SingletonTable::GetInstance()
+SingletonTable *SingletonTable::GetInstance(int counter, char** arguments)
 {
     if(SingletonTable_==nullptr){
-        SingletonTable_ = new SingletonTable();
+        if(counter == 2){
+            std::ifstream ifile;
+            ifile.open(arguments[1]);
+            if(ifile && std::string(arguments[1]).substr(std::string(arguments[1]).length() - 4) == ".csv") {
+                SingletonTable_ = new SingletonTable(std::string(arguments[1]));
+            } else {
+                SingletonTable_ = new SingletonTable();
+            }
+        }else if(counter == 4){
+            std::ifstream ifile;
+            ifile.open(arguments[1]);
+            if(
+                ifile && 
+                std::string(arguments[1]).substr(std::string(arguments[1]).length() - 4) == ".csv" &&
+                std::string(arguments[2]) == "-sep" &&
+                std::string(arguments[3]).length() == 1
+                ) {
+                SingletonTable_ = new SingletonTable(std::string(arguments[1]),std::string(arguments[3])); //implementalni
+            } else {
+                SingletonTable_ = new SingletonTable();
+            }
+        }else{
+            SingletonTable_ = new SingletonTable();
+        }
     }
     return SingletonTable_;
 }
