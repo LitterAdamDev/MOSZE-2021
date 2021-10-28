@@ -1,4 +1,3 @@
-[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-f059dc9a6f8d3a56e377f745f24479a46679e63a5d9fe6f495e02850cd0d8118.svg)](https://classroom.github.com/online_ide?assignment_repo_id=453509&assignment_repo_type=GroupAssignmentRepo)
 ## Modern szoftverfejlesztési eszközök 2021
 
 ### 0. Feladat: Ennek a felsorolásnak a felülírása a következő adatokkal:
@@ -81,12 +80,69 @@ Dokumentáció:
   * `align MN:XY left/right` egyszerre több cellának állítja be az igazítását
   * `clear MN:XY` üresre állítja a cellák tartalmát
 
-### További feladatok
+### 4-6. feladatok
 
-A további feladatok a template repó Readme-jében fognak megjelenni: https://github.com/SZE-MoSzE/MoSzE-Template#readme
+Ez a 3 feladat nem épül egymásra, párhuzamosan lehet rajtuk dolgozni, de mivel az előadásokon elhangzó tananyagra épülnek, azt a sorrendet követik a határidők.
 
-A feladatok megjelenésekor készülni fog 1-1 PR, így aki értesítést szeretne kapni róla, az kövesse be (watch) a template repót a megfelelő notification beállításokkal.
+A 3 feladat mindegyikéhez legyen 1-1 különböző csapattag kijelölve felelős fejlesztőnek, aki a PR-ben legyen assignee-nak jelölve. Továbbá legyen 1-1 tesztelő és code reviewer is kijelölve és a descriptionben megadva (ezeknek a szerepeknek a felosztása tetszőleges, csak a felelős fejlesztőtől térjen el).
 
-A feladatokkal kapcsolatos kérdéseket is a template repóban a PR alatt, vagy issue létrehozásával lehet feltenni.
-Saját kódra vonatkozó kérdéseket pedig a csapat repójának Feedback PR-jában vagy az adott feladathoz már létrehozott PR-ban.
+A tesztelő feladata ellenőrizni a helyes működést, manuális és automatikus tesztek elvégzésével. A code reviewer feladata a kódminőség ellenőrzése és javítása. Először ő írjon code review-t, és csak utána legyek én felkérve review-ra (@oliverosz).
 
+## 4. feladat (határidő a PR nyitására: 11.17.)
+
+Az új funkcióhoz a tesztelő készítsen egységteszteket.
+
+Új funkció: aggregátor függvények támogatása
+
+* Ha egy cellába a user egy aggregátor függvényt ír, pl.:`=SUM(MN:XY)`, akkor megjelenítésnél a függvény eredménye jelenjen meg a cellában
+  * Aggregátor függvények:
+    * `SUM` összeg
+    * `AVG` átlag
+    * `MIN` minimum
+    * `MAX` maximum
+* A paraméter egy tartomány, ennek nem kell változnia, ha törlésre kerülnek hivatkozott cellák, ha érvénytelen a tartomány (pl. mert kilóg a táblázatból), akkor jelenjen meg a cellában a `#NAME?` szöveg
+* A tartományban szereplő nem-numerikus cellákat (amire az `std::stof` exceptiont dob, és nem függvényt tartalmaz) hagyja figyelmen kívül a függvény, tehát pl. az átlag nevezőjébe ne számítsanak bele
+* A számított értékek fixen 3 tizedesjegy pontossággal jelenjenek meg (`std::cout << std::fixed << std::setprecision(3)`)
+* A függvényt tartalmazó cellák fájlba mentésnél is képletként legyenek mentve, és fájlbetöltés után is működjenek
+* A megadott tartományban is lehetnek függvényt tartalmazó cellák, ekkor azok számított értékét használja (ezt érdemes a cella eredeti szöveges tartalmától független módon tárolni)
+  * Ha körkörös hivatkozás van, akkor a körben résztvevő cellákban a `#CYCLE!` szöveg jelenjen meg
+  * Egy lehetséges megoldás vázlata:
+    1. Minden XY cellára: `evaluated[XY] = true`
+    2. Minden XY cellára, ami függvényt tartalmaz: `evaluated[XY] = false`
+    3. Amíg van XY cella, amire `!evaluated[XY]`:
+        1. `updated = 0`
+        2. Minden XY cellát, amire `!evaluated[XY]`, de a hivatkozott tartományában minden cella `evaluated`:
+            * Értékeljük ki a függvényt és `evaluated[XY] = true`
+            * `updated++`
+        3. Ha `updated == 0`, akkor a megmaradt függvényeket nem lehet kiértékelni, az eredményüket állítsuk a `#CYCLE!` szövegre
+
+## 5. feladat (határidő a PR nyitására: 11.24.)
+
+* Készüljön egy új, `barchart MN:XY filename` parancs a programban, ami a megadott tartományból előállít egy csoportosított oszlopdiagramot ábrázoló SVG ábrát
+  * A tartomány első oszlopában lévő cellák alkossák az X-tengely pontjainak feliratait, az első sor pedig az adatsorok neveit
+  * A kimenet legyen egy `filename.svg` ábra, vagy egy `filename.html` weblap egy beágyazott SVG-vel és a megjelenítésért felelős JS, CSS, stb. kóddal
+  * Az SVG elkészíthető saját implementációval vagy tetszőleges 3rd-party library-t / segédprogramot fel szabad hozzá használni
+* Készüljön egy Docker image, ami tartalmaz minden programot, amire szükség van a projekt fordításához, dokumentáció generálásához, program futtatásához
+  * A Dockerfile kerüljön be a csapat repójába, az image pedig legyen publikálva a Docker Hub-ra
+  * A GitHub Actions workflow használja ezt az image-et, és ne telepítsen semmilyen további csomagot
+
+## 6. feladat (határidő a PR nyitására: 12.01.)
+
+* A program tudjon kezelni több megnyitott táblázatot
+  * Megjelenítés:
+    * Egyszerre egy táblázat aktív, csak ennek a cellái jelennek meg
+    * Az aktív táblázat alatt legyenek listázva a megnyitott táblázatok indexei és nevei, az aktív táblázatot *-gal jelölve, pl.: `0: Nevek  1*: Cimek  2: Telefonszamok`
+  * Ha induláskor parancssori argumentumként megadott fájlból lett beolvasva a táblázat, akkor a neve legyen a fájlnév, ha üres táblázattal lett elindítva, akkor ennek a neve legyen `Table`
+  * A táblázatok közötti egymásra hivatkozásokat nem kell kezelni
+  * Új parancsok:
+    * `new sheet name` létrehoz egy új táblázatot a megadott névvel, és beállítja aktívnak
+    * `open filename [-sep ,]` létrehoz egy új táblázatot, betölti a megadott fájlból, a nevét beállítja a fájlnévre, és beállítja aktívnak
+    * `close N` bezárja az N indexű táblázatot, és felszabadítja az általa foglalt memóriát
+      * Az N-nél nagyobb indexű táblázatok indexe 1-gyel csökken
+      * Ha az utolsó megnyitott táblázat is be lett zárva, akkor lépjen ki a program
+    * `rename N newname` átnevezi az N indexű táblázatot a megadott új névre
+* A CI workflow egészüljön ki egy olyan teszttel, ami AddressSanitizer vagy Valgrind/Memcheck segítségével ellenőrzi, hogy nincs memóriaszivárgás vagy egyéb memóriahiba, és hiba esetén jelölje Failed-nek a workflow-t
+
+### 7. feladat (TBD)
+
+További programozási feladat legfeljebb szorgalmiként, 5-ös megajánlott jegyért lesz, de a Makefile témakörhöz kapcsolódó kisebb feladat még várható.
