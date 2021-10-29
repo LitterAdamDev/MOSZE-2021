@@ -1,7 +1,7 @@
 #include "SingletonTable.h"
 
 
-SingletonTable::SingletonTable(): table_{{Cell()}},error_{""}, isOn{true}{}
+SingletonTable::SingletonTable(): table_{{Cell(table_)}},error_{""}, isOn{true}{}
 
 /*! \brief Constructor of SingletonTable class \n
  *  Reads the data from a file \n
@@ -37,12 +37,12 @@ SingletonTable::SingletonTable(std::string filename): error_{""}, isOn{true}{
                 actCell+=actLine[ch];
             }
             else{
-                actRow.push_back(Cell(actCell));
+                actRow.push_back(Cell(table_,actCell));
                 actCell = "";
             }
         }
         while(actRow.size() < maxCols+1){
-            actRow.push_back(Cell());
+            actRow.push_back(Cell(table_));
         }
         table_.push_back(actRow);
     }
@@ -82,12 +82,12 @@ SingletonTable::SingletonTable(std::string filename,std::string separator): erro
                 actCell+=actLine[ch];
             }
             else{
-                actRow.push_back(Cell(actCell));
+                actRow.push_back(Cell(table_,actCell));
                 actCell = "";
             }
         }
         while(actRow.size() < maxCols+1){
-            actRow.push_back(Cell());
+            actRow.push_back(Cell(table_));
         }
         table_.push_back(actRow);
     }
@@ -220,7 +220,7 @@ void SingletonTable::Edit(const std::string &attrs){
             }
             if((table_.size() > row) && (row != -1)){
                 if(table_[row].size() > col){
-                    table_[row][col].SetValue(str);
+                    table_[row][col].SetValue(table_,str);
                 }else{
                     SetError("There are only " + std::to_string(table_[row].size()) + " columns in this table.");
                 }
@@ -270,11 +270,11 @@ void SingletonTable::Add(const std::string &attrs){
     case 0:
         if(parts[1] == "rows"){
             for(unsigned i = 0; i < stoi(parts[0]);i++)
-                table_.push_back(std::vector<Cell>(table_[0].size(),Cell()));
+                table_.push_back(std::vector<Cell>(table_[0].size(),Cell(table_)));
         }else{
             for(unsigned i = 0; i < stoi(parts[0]);i++)
                 for(unsigned j = 0; j < table_.size(); j++)
-                    table_[j].push_back(Cell());
+                    table_[j].push_back(Cell(table_));
         }
         break;
     default:
@@ -346,14 +346,14 @@ void SingletonTable::Delete(const std::string &attrs){
         if(row != -1){
             if((row == 1) && (table_.size() == 1)){
                 for(unsigned i = 0; i < table_[0].size(); i++)
-                    table_[0][i].SetValue("");
+                    table_[0][i].SetValue(table_,"");
             }else{
                 table_.erase(table_.begin() + row-1);
             }
         }else{
             if((table_[0].size() == 1) && (col == 0)){
                 for(unsigned i = 0; i < table_.size(); i++)
-                    table_[i][0].SetValue("");
+                    table_[i][0].SetValue(table_,"");
             }else{
                 for(unsigned i = 0; i < table_.size(); i++)
                     table_[i].erase(table_[i].begin() + col-1);
@@ -456,26 +456,26 @@ void SingletonTable::Insert(const std::string &attrs){
         if(type == "rows"){
             if(parts[2] == "before")
                 for(unsigned i = 0; i < counter; i++)
-                    table_.insert(table_.begin()+(position-1),std::vector<Cell>(table_[0].size(),Cell()));
+                    table_.insert(table_.begin()+(position-1),std::vector<Cell>(table_[0].size(),Cell(table_)));
             if(parts[2] == "after"){
                 if(position > table_.size()){
                     for(unsigned i = 0; i < counter; i++)
-                        table_.push_back(std::vector<Cell>(table_[0].size(),Cell()));
+                        table_.push_back(std::vector<Cell>(table_[0].size(),Cell(table_)));
                 }else{
                     for(unsigned i = 0; i < counter; i++)
-                        table_.insert(table_.begin()+(position),std::vector<Cell>(table_[0].size(),Cell()));
+                        table_.insert(table_.begin()+(position),std::vector<Cell>(table_[0].size(),Cell(table_)));
                 }
             }
         }else{
             if(parts[2] == "before")
                 for(unsigned j = 0; j < counter; j++)
                     for(unsigned i = 0; i < table_.size(); i++)
-                        table_[i].insert(table_[i].begin()+(position),Cell());
+                        table_[i].insert(table_[i].begin()+(position),Cell(table_));
             
             if(parts[2] == "after")
                 for(unsigned j = 0; j < counter; j++)
                         for(unsigned i = 0; i < table_.size(); i++)
-                            table_[i].insert(table_[i].begin()+(position+1),Cell());
+                            table_[i].insert(table_[i].begin()+(position+1),Cell(table_));
         }
         break;
     default:
@@ -595,7 +595,7 @@ void SingletonTable::Clear(const std::string &attrs){
                 if(firstCell == secondCell){
                     int col = int(std::toupper(firstCell[0]) - 'A');
                     int row = stoi(firstCell.substr(1,firstCell.length()));
-                    table_[row-1][col].SetValue("");
+                    table_[row-1][col].SetValue(table_,"");
                 }else{
                     topLeftRow = stoi(firstCell.substr(1,firstCell.length())) < stoi(secondCell.substr(1,secondCell.length()))?
                     stoi(firstCell.substr(1,firstCell.length())) : stoi(secondCell.substr(1,secondCell.length()));
@@ -607,7 +607,7 @@ void SingletonTable::Clear(const std::string &attrs){
                     int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
                     for(unsigned r = topLeftRow; r <= bottomRightRow; r++){
                         for(unsigned c = topLeftCol; c <= bottomRightCol; c++){
-                            table_[r-1][c].SetValue("");
+                            table_[r-1][c].SetValue(table_, "");
                         }
                     }
                 }
@@ -776,7 +776,7 @@ struct Address{
  */
 void SingletonTable::Swap(const std::string &attrs){
     int errorCode = 0;
-    Cell tmp; 
+    Cell tmp(table_); 
     Address adrs_arr[2];
     std::vector<std::string> parts;
     SplitString(attrs,parts);
@@ -834,9 +834,9 @@ void SingletonTable::Swap(const std::string &attrs){
         SetError("Cell is out of range!");
         break;
     case 0:
-        tmp.SetValue(table_[adrs_arr[0].row -1][adrs_arr[0].col -1].GetValue());
-        table_[adrs_arr[0].row -1][adrs_arr[0].col -1].SetValue(table_[adrs_arr[1].row -1][adrs_arr[1].col -1].GetValue());
-        table_[adrs_arr[1].row -1][adrs_arr[1].col -1].SetValue(tmp.GetValue());
+        tmp.SetValue(table_,table_[adrs_arr[0].row -1][adrs_arr[0].col -1].GetValue());
+        table_[adrs_arr[0].row -1][adrs_arr[0].col -1].SetValue(table_, table_[adrs_arr[1].row -1][adrs_arr[1].col -1].GetValue());
+        table_[adrs_arr[1].row -1][adrs_arr[1].col -1].SetValue(table_, tmp.GetValue());
         break;
     default:
         break;
@@ -854,7 +854,7 @@ void SingletonTable::Sort(const std::string &attrs){
     SortType stype;
     SortBy sby;
     unsigned col_row_num;
-    Cell tmp;
+    Cell tmp(table_);
     std::vector<Cell> col_vec;
     // Check argument count
     if(parts.size() < 2){
@@ -1049,4 +1049,79 @@ bool SingletonTable::compare_func(const Cell& a,const Cell& b, const SortType& s
         return a>b;
     }
     return a<b;
+}
+
+void Cell::CalculateFormula(const std::string& formula){
+    unsigned errorCode = 0;
+    FormulaType type;
+    if(formula.length() < 11){
+        errorCode = 1;
+    }else{
+        if(formula[0] != '='){
+            errorCode = 1;
+        }else{
+            std::string tmp_type = formula.substr(1,3);
+            if(tmp_type == "SUM"){
+                type = FormulaType::SUM;
+            }else if(tmp_type == "AVG"){
+                type = FormulaType::AVG;
+            }else if(tmp_type == "MIN"){
+                type = FormulaType::MIN;
+            }else if(tmp_type == "MAX"){
+                type = FormulaType::MAX;
+            }else{
+                errorCode = 1;
+            }
+        }
+    }
+    if(errorCode != 0){
+        this->value_ = formula;
+        this->is_formula_ = false;
+        this->formula_ = "";
+    }else{
+        int pos = formula.find(':');
+        if(pos != -1){
+            std::string firstCell = formula.substr(0,pos);
+            std::string secondCell = formula.substr(pos+1,formula.length());
+            if(
+                isalpha(firstCell[0]) &&
+                SingletonTable::is_number(firstCell.substr(1,firstCell.length())) &&
+                isalpha(secondCell[0]) &&
+                SingletonTable::is_number(secondCell.substr(1,secondCell.length()))
+            ){
+                int topLeftRow;
+                int topLeftCol;
+                int bottomRightRow;
+                int bottomRightCol;
+                double result = 0;
+                unsigned counter = 0;
+                topLeftRow = stoi(firstCell.substr(1,firstCell.length())) < stoi(secondCell.substr(1,secondCell.length()))?
+                stoi(firstCell.substr(1,firstCell.length())) : stoi(secondCell.substr(1,secondCell.length()));
+                bottomRightRow = stoi(firstCell.substr(1,firstCell.length())) > stoi(secondCell.substr(1,secondCell.length()))?
+                stoi(firstCell.substr(1,firstCell.length())) : stoi(secondCell.substr(1,secondCell.length()));
+                topLeftCol = int(std::toupper(firstCell[0]) - 'A') < int(std::toupper(secondCell[0]) - 'A')?
+                int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
+                bottomRightCol = int(std::toupper(firstCell[0]) - 'A') > int(std::toupper(secondCell[0]) - 'A')?
+                int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
+                for(unsigned r = topLeftRow; r <= bottomRightRow; r++){
+                    for(unsigned c = topLeftCol; c <= bottomRightCol; c++){
+                       // if(SingletonTable::is_number(SingletonTable::table_.))
+                        if(type == FormulaType::SUM){
+                           
+                        }else if(type == FormulaType::AVG){
+                            
+                        }else if(type == FormulaType::MIN){
+
+                        }else if(type = FormulaType::MAX){
+
+                        }
+                    }
+                }
+            }else{
+              //  SetError("Wrong position attributes!");
+            }
+        }else{
+           // SetError("Wrong position attributes!");
+        }
+    }
 }

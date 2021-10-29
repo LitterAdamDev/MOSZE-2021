@@ -13,12 +13,20 @@
  */
 class Cell{
 private:
+    enum FormulaType {
+        SUM = 0,
+        AVG,
+        MIN,
+        MAX
+    };
     int align_ = std::ios::left;
     std::string value_ = "";
-
+    bool is_formula_ = false;
+    std::string formula_ = "";
+    void CalculateFormula(const std::string&);
 public:
-    Cell(){}        /*! constructor of Cell class */
-    Cell(std::string value, int align = std::ios::left):align_{align},value_{value}{}   
+    Cell(const std::vector<std::vector<Cell>>&){}        /*! constructor of Cell class */
+    Cell(const std::vector<std::vector<Cell>>&, std::string value, int align = std::ios::left):align_{align},value_{value}{}   
     Cell& operator=(Cell other){
         align_=other.align_;
         value_=other.value_;
@@ -33,7 +41,7 @@ public:
     void SetAlign(int align){       /*! set the value of align */
         this->align_ = align;
     }
-    void SetValue(std::string value){  /*! set the value of the cell */
+    void SetValue(const std::vector<std::vector<Cell>>&, std::string value){  /*! set the value of the cell */
         this->value_ = value;
     }
     friend bool operator<(const Cell& a,const Cell& b);
