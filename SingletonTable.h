@@ -7,6 +7,7 @@
 #include <numeric>
 #include <fstream>
 #include <sstream>
+#include <float.h>
 
 /*! \brief Cell class:
  * for the table cells
@@ -22,27 +23,56 @@ private:
     int align_ = std::ios::left;
     std::string value_ = "";
     bool is_formula_ = false;
+    bool is_formula_right = false;
+    unsigned TLR;
+    unsigned TLC;
+    unsigned BRR;
+    unsigned BRC;
+    bool evaluated;
+    FormulaType type_;
     std::string formula_ = "";
-    void CalculateFormula(const std::string&);
+    void CalculateFormula(const std::vector<std::vector<Cell>>&, const std::string&);
 public:
     Cell(const std::vector<std::vector<Cell>>&){}        /*! constructor of Cell class */
-    Cell(const std::vector<std::vector<Cell>>&, std::string value, int align = std::ios::left):align_{align},value_{value}{}   
+    Cell(const std::vector<std::vector<Cell>>& table, std::string value, int align = std::ios::left):align_{align}{
+        CalculateFormula(table,value);
+    }   
+    static void Refresh(const std::vector<std::vector<Cell>>& table,const std::string&);
     Cell& operator=(Cell other){
         align_=other.align_;
         value_=other.value_;
+        is_formula_ = other.is_formula_;
+        is_formula_right = other.is_formula_right;
+        TLR = other.TLR;
+        TLC = other.TLC;
+        BRR = other.BRR;
+        BRC = other.BRC;
+        evaluated = true;
+        type_ = other.type_;
+        formula_ = other.formula_;
         return *this;
     }
     int GetAlign() const{ /*! return value of align */
         return align_;
     }
     std::string GetValue() const{   /*! return the value of the cell */
+        if(this->is_formula_ && this->is_formula_right){
+            return formula_;
+        }else{
+            return value_;
+        }
+    }
+    std::string GetPrint() const{
         return value_;
+    }
+    std::string GetFormula() const{
+        return formula_;
     }
     void SetAlign(int align){       /*! set the value of align */
         this->align_ = align;
     }
-    void SetValue(const std::vector<std::vector<Cell>>&, std::string value){  /*! set the value of the cell */
-        this->value_ = value;
+    void SetValue(const std::vector<std::vector<Cell>>& table, std::string value){  /*! set the value of the cell */
+        CalculateFormula(table,value);
     }
     friend bool operator<(const Cell& a,const Cell& b);
     friend bool operator>(const Cell& a,const Cell& b);
@@ -79,7 +109,10 @@ protected:
     void Align(const std::string&);                                     
     void Clear(const std::string&);                                     
     void Swap(const std::string&);                                     
-    void Sort(const std::string&);                                      
+    void Sort(const std::string&);
+    void RefreshTable(){
+        Cell::Refresh(this->table_,"");
+    }                                      
     enum SortType{                                                      
         asc=1,
         desc=0

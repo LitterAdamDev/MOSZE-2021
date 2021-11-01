@@ -117,8 +117,8 @@ void SingletonTable::PrintTable(){
     std::vector<int> columnLengths(table_[0].size(),0);
     for(unsigned r = 0; r < table_.size();r++){
         for(unsigned c = 0; c < table_[r].size();c++){
-            if(table_[r][c].GetValue().length() > columnLengths[c])
-                columnLengths[c] = table_[r][c].GetValue().length();
+            if(table_[r][c].GetPrint().length() > columnLengths[c])
+                columnLengths[c] = table_[r][c].GetPrint().length();
         }
     }
     std::cout.setf(std::ios::left);
@@ -155,7 +155,7 @@ void SingletonTable::PrintTable(){
                 std::cout.width(1);
             }
             std::cout.setf(std::ios_base::fmtflags(table_[r][c].GetAlign()),std::ios::adjustfield);
-            std::cout << table_[r][c].GetValue();
+            std::cout << table_[r][c].GetPrint();
         }
         std::cout<< "|" <<std::endl;
         std::cout << rowSeparator << std::endl;
@@ -276,6 +276,7 @@ void SingletonTable::Add(const std::string &attrs){
                 for(unsigned j = 0; j < table_.size(); j++)
                     table_[j].push_back(Cell(table_));
         }
+        RefreshTable();
         break;
     default:
         break;
@@ -302,8 +303,9 @@ void SingletonTable::Delete(const std::string &attrs){
         if(parts[0].length() == 1){
             if(isalpha(parts[0][0])){
                 col = int(std::toupper(parts[0][0]) - 'A');
-                if(col > table_[0].size()-1 || col < 0)
+                if(col > table_[0].size()-1 || col < 0){
                     errorCode = 5;
+                }
             }else{
                 if(isdigit(parts[0][0])){
                     row = stoi(parts[0]);
@@ -355,10 +357,12 @@ void SingletonTable::Delete(const std::string &attrs){
                 for(unsigned i = 0; i < table_.size(); i++)
                     table_[i][0].SetValue(table_,"");
             }else{
-                for(unsigned i = 0; i < table_.size(); i++)
-                    table_[i].erase(table_[i].begin() + col-1);
+                for(unsigned i = 0; i < table_.size(); i++){
+                    table_[i].erase(table_[i].begin() + col);
+                }
             }
         }
+        RefreshTable();
         break;
     default:
         break;
@@ -477,6 +481,7 @@ void SingletonTable::Insert(const std::string &attrs){
                         for(unsigned i = 0; i < table_.size(); i++)
                             table_[i].insert(table_[i].begin()+(position+1),Cell(table_));
         }
+        RefreshTable();
         break;
     default:
         break;
@@ -552,7 +557,6 @@ void SingletonTable::Align(const std::string &attrs){
                 int col = int(std::toupper(parts[0][0]) - 'A');
                 int row = stoi(parts[0].substr(1,parts[0].length()));
                 if(parts[1] == "left" || parts[1] == "right"){
-                    std::cout<< "Row: " << row << ", Col: " << col << ", Align: " << parts[1] << std::endl;
                     if(parts[1] == "left"){
                         table_[row-1][col].SetAlign(std::ios::left);
                     }else{
@@ -595,7 +599,8 @@ void SingletonTable::Clear(const std::string &attrs){
                 if(firstCell == secondCell){
                     int col = int(std::toupper(firstCell[0]) - 'A');
                     int row = stoi(firstCell.substr(1,firstCell.length()));
-                    table_[row-1][col].SetValue(table_,"");
+                    if(row-1 < table_.size() && col < table_[0].size())
+                        table_[row-1][col].SetValue(table_,"");
                 }else{
                     topLeftRow = stoi(firstCell.substr(1,firstCell.length())) < stoi(secondCell.substr(1,secondCell.length()))?
                     stoi(firstCell.substr(1,firstCell.length())) : stoi(secondCell.substr(1,secondCell.length()));
@@ -607,7 +612,8 @@ void SingletonTable::Clear(const std::string &attrs){
                     int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
                     for(unsigned r = topLeftRow; r <= bottomRightRow; r++){
                         for(unsigned c = topLeftCol; c <= bottomRightCol; c++){
-                            table_[r-1][c].SetValue(table_, "");
+                            if(r-1 < table_.size() && c < table_[0].size())
+                                table_[r-1][c].SetValue(table_, "");
                         }
                     }
                 }
@@ -620,6 +626,7 @@ void SingletonTable::Clear(const std::string &attrs){
     }else{
         SetError("Wrong attributes!");
     }
+    RefreshTable();
 }
 
 /*! \brief Save in file:
@@ -758,7 +765,7 @@ SingletonTable *SingletonTable::GetInstance(int counter, char** arguments)
  */
 bool SingletonTable::is_number(const std::string& s){
     std::string::const_iterator it = s.begin();
-    while (it != s.end() && std::isdigit(*it)) ++it;
+    while (it != s.end() && (std::isdigit(*it) || *it == '.')) ++it;
     return !s.empty() && it == s.end();
 }
 
@@ -837,6 +844,7 @@ void SingletonTable::Swap(const std::string &attrs){
         tmp.SetValue(table_,table_[adrs_arr[0].row -1][adrs_arr[0].col -1].GetValue());
         table_[adrs_arr[0].row -1][adrs_arr[0].col -1].SetValue(table_, table_[adrs_arr[1].row -1][adrs_arr[1].col -1].GetValue());
         table_[adrs_arr[1].row -1][adrs_arr[1].col -1].SetValue(table_, tmp.GetValue());
+        RefreshTable();
         break;
     default:
         break;
@@ -911,60 +919,61 @@ void SingletonTable::Sort(const std::string &attrs){
                 errorCode=6;
             }
         }
+    } 
     switch (errorCode){
-    case 1:
-        SetError("Missing attributes!");
-        break;
-    case 2:
-        SetError("Too much attributes!");
-        break;
-    case 3:
-        SetError("First argument must be \"BY\" !");
-        break;
-    case 4:
-        SetError("Invalid row/col format!");
-        break;
-    case 5:
-        SetError("Given column or row does'nt exist!");
-        break;
-    case 6:
-        SetError("Invalid sort type arguement, use \"asc\" or \"desc\" or leave blank (asc) !");
-        break;
-    case 0:
-        if (sby==sortByRow){
-            for (unsigned i=0; i<table_[col_row_num-1].size();i++){
-                for (unsigned index=0; index<=table_[col_row_num-1].size()-2; index++){
-                    if (compare_func(table_[col_row_num-1][index], table_[col_row_num-1][index+1],stype)){
-                        tmp=table_[col_row_num-1][index];
-                        table_[col_row_num-1][index]=table_[col_row_num-1][index+1];
-                        table_[col_row_num-1][index+1]=tmp;
+        case 1:
+            SetError("Missing attributes!");
+            break;
+        case 2:
+            SetError("Too much attributes!");
+            break;
+        case 3:
+            SetError("First argument must be \"BY\" !");
+            break;
+        case 4:
+            SetError("Invalid row/col format!");
+            break;
+        case 5:
+            SetError("Given column or row does'nt exist!");
+            break;
+        case 6:
+            SetError("Invalid sort type arguement, use \"asc\" or \"desc\" or leave blank (asc) !");
+            break;
+        case 0:
+            if (sby==sortByRow){
+                for (unsigned i=0; i<table_[col_row_num-1].size();i++){
+                    for (unsigned index=0; index<=table_[col_row_num-1].size()-2; index++){
+                        if (compare_func(table_[col_row_num-1][index], table_[col_row_num-1][index+1],stype)){
+                            tmp=table_[col_row_num-1][index];
+                            table_[col_row_num-1][index]=table_[col_row_num-1][index+1];
+                            table_[col_row_num-1][index+1]=tmp;
+                        }
                     }
                 }
             }
-        }
-        else{
-            for (auto& row_vec : table_){
-                col_vec.push_back(row_vec[col_row_num-1]);
-            }
-            for (unsigned i=0; i<col_vec.size();i++){
-                for (unsigned index=0; index<=col_vec.size()-2; index++){
-                    if (compare_func(col_vec[index], col_vec[index+1],stype)){
-                        tmp=col_vec[index];
-                        col_vec[index]=col_vec[index+1];
-                        col_vec[index+1]=tmp;
+            else{
+                for (auto& row_vec : table_){
+                    col_vec.push_back(row_vec[col_row_num-1]);
+                }
+                for (unsigned i=0; i<col_vec.size();i++){
+                    for (unsigned index=0; index<=col_vec.size()-2; index++){
+                        if (compare_func(col_vec[index], col_vec[index+1],stype)){
+                            tmp=col_vec[index];
+                            col_vec[index]=col_vec[index+1];
+                            col_vec[index+1]=tmp;
+                        }
                     }
                 }
+                for (unsigned i=0; i<col_vec.size();i++){
+                    // kell assignment operator a cell classban
+                    table_[i][col_row_num-1]=col_vec[i];
+                }
             }
-            for (unsigned i=0; i<col_vec.size();i++){
-                // kell assignment operator a cell classban
-                table_[i][col_row_num-1]=col_vec[i];
-            }
-        }
-        break;
-    default:
-        break;
+            RefreshTable();
+            break;
+        default:
+            break;
     }
-} 
 }
 
 /*!  
@@ -972,13 +981,13 @@ void SingletonTable::Sort(const std::string &attrs){
  *  Parameters: const Cell& a, const Cell& b
  */
 bool operator<(const Cell& a,const Cell& b){
-    if(SingletonTable::is_number(a.GetValue()) && SingletonTable::is_number(b.GetValue())){
-        return std::stod(a.GetValue()) < std::stod(b.GetValue());
+    if(SingletonTable::is_number(a.GetPrint()) && SingletonTable::is_number(b.GetPrint())){
+        return std::stod(a.GetPrint()) < std::stod(b.GetPrint());
     }
-    else if (!SingletonTable::is_number(a.GetValue()) && !SingletonTable::is_number(b.GetValue())){
-        return a.GetValue() < b.GetValue();
+    else if (!SingletonTable::is_number(a.GetPrint()) && !SingletonTable::is_number(b.GetPrint())){
+        return a.GetPrint() < b.GetPrint();
     }
-    else if (SingletonTable::is_number(a.GetValue())){
+    else if (SingletonTable::is_number(a.GetPrint())){
         return false;
     }
     else{
@@ -990,13 +999,13 @@ bool operator<(const Cell& a,const Cell& b){
  *  Parameters: const Cell& a, const Cell& b
  */
 bool operator>(const Cell& a,const Cell& b){
-    if(SingletonTable::is_number(a.GetValue()) && SingletonTable::is_number(b.GetValue())){
-        return std::stod(a.GetValue()) > std::stod(b.GetValue());
+    if(SingletonTable::is_number(a.GetPrint()) && SingletonTable::is_number(b.GetPrint())){
+        return std::stod(a.GetPrint()) > std::stod(b.GetPrint());
     }
-    else if (!SingletonTable::is_number(a.GetValue()) && !SingletonTable::is_number(b.GetValue())){
-        return a.GetValue() > b.GetValue();
+    else if (!SingletonTable::is_number(a.GetPrint()) && !SingletonTable::is_number(b.GetPrint())){
+        return a.GetPrint() > b.GetPrint();
     }
-    else if (SingletonTable::is_number(a.GetValue())){
+    else if (SingletonTable::is_number(a.GetPrint())){
         return true;
     }
     else{
@@ -1051,9 +1060,9 @@ bool SingletonTable::compare_func(const Cell& a,const Cell& b, const SortType& s
     return a<b;
 }
 
-void Cell::CalculateFormula(const std::string& formula){
+void Cell::CalculateFormula(const std::vector<std::vector<Cell>>& table,const std::string& formula){
+    //BASIC INPUT VALIDATION
     unsigned errorCode = 0;
-    FormulaType type;
     if(formula.length() < 11){
         errorCode = 1;
     }else{
@@ -1062,27 +1071,36 @@ void Cell::CalculateFormula(const std::string& formula){
         }else{
             std::string tmp_type = formula.substr(1,3);
             if(tmp_type == "SUM"){
-                type = FormulaType::SUM;
+                this->type_ = FormulaType::SUM;
             }else if(tmp_type == "AVG"){
-                type = FormulaType::AVG;
+                this->type_ = FormulaType::AVG;
             }else if(tmp_type == "MIN"){
-                type = FormulaType::MIN;
+                this->type_ = FormulaType::MIN;
             }else if(tmp_type == "MAX"){
-                type = FormulaType::MAX;
+                this->type_ = FormulaType::MAX;
             }else{
                 errorCode = 1;
             }
         }
     }
     if(errorCode != 0){
+        // THE INPUT DOES NOT CONTAIN FORMULA
         this->value_ = formula;
         this->is_formula_ = false;
+        this->is_formula_right = false;
         this->formula_ = "";
     }else{
+        // THE INPUT DOES CONTAIN A FORMULA
+        // GET THE COORDINATES OF THE RANGE
         int pos = formula.find(':');
-        if(pos != -1){
-            std::string firstCell = formula.substr(0,pos);
-            std::string secondCell = formula.substr(pos+1,formula.length());
+        int posLP = formula.find('(');
+        int posRP = formula.find(')');
+        this->is_formula_ = true;
+        this->formula_ = formula;
+        if(pos != -1 && posLP != -1 && posLP != -1){
+            std::string firstCell = formula.substr(posLP+1,2);
+            std::string secondCell = formula.substr(pos+1,2);
+            // VALIDATE COORINATES
             if(
                 isalpha(firstCell[0]) &&
                 SingletonTable::is_number(firstCell.substr(1,firstCell.length())) &&
@@ -1095,6 +1113,8 @@ void Cell::CalculateFormula(const std::string& formula){
                 int bottomRightCol;
                 double result = 0;
                 unsigned counter = 0;
+                double min = DBL_MAX;
+                double max = -DBL_MAX;
                 topLeftRow = stoi(firstCell.substr(1,firstCell.length())) < stoi(secondCell.substr(1,secondCell.length()))?
                 stoi(firstCell.substr(1,firstCell.length())) : stoi(secondCell.substr(1,secondCell.length()));
                 bottomRightRow = stoi(firstCell.substr(1,firstCell.length())) > stoi(secondCell.substr(1,secondCell.length()))?
@@ -1103,25 +1123,336 @@ void Cell::CalculateFormula(const std::string& formula){
                 int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
                 bottomRightCol = int(std::toupper(firstCell[0]) - 'A') > int(std::toupper(secondCell[0]) - 'A')?
                 int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
-                for(unsigned r = topLeftRow; r <= bottomRightRow; r++){
-                    for(unsigned c = topLeftCol; c <= bottomRightCol; c++){
-                       // if(SingletonTable::is_number(SingletonTable::table_.))
-                        if(type == FormulaType::SUM){
-                           
-                        }else if(type == FormulaType::AVG){
-                            
-                        }else if(type == FormulaType::MIN){
-
-                        }else if(type = FormulaType::MAX){
-
+                this->is_formula_right = true;
+                this->TLR = topLeftRow;
+                this->TLC = topLeftCol;
+                this->BRR = bottomRightRow;
+                this->BRC= bottomRightCol;
+                //VALIDATE RANGE
+                if(  
+                    topLeftRow > table.size() ||
+                    bottomRightRow > table.size() || 
+                    topLeftCol > (table[0].size()-1) || 
+                    bottomRightCol > (table[0].size()-1)
+                ){
+                    // WRONG RANGE
+                    this->value_ = "#NAME?";
+                }else{
+                    // GOOD RANGE
+                    // CALCULATE THE RESULT OF THE FORMULA
+                    for(unsigned r = topLeftRow; r <= bottomRightRow; r++){
+                        for(unsigned c = topLeftCol; c <= bottomRightCol; c++){
+                            std::string tmp = table[r-1][c].GetValue();
+                            if(this->type_ == FormulaType::SUM){
+                                if(SingletonTable::is_number(tmp)){
+                                    result += std::stod(tmp);
+                                }
+                            }else if(this->type_ == FormulaType::AVG){
+                                if(SingletonTable::is_number(tmp)){
+                                    result += std::stod(tmp);
+                                    counter++;
+                                }
+                                if(r == bottomRightRow && c == bottomRightCol){
+                                    result /= (double)counter;
+                                }
+                            }else if(this->type_ == FormulaType::MIN){
+                                if(SingletonTable::is_number(tmp)){
+                                    double val = std::stod(tmp);
+                                    if(val < min){
+                                        min = val;
+                                    }
+                                }
+                                if(r == bottomRightRow && c == bottomRightCol){
+                                    result = min;
+                                }
+                            }else if(this->type_ = FormulaType::MAX){
+                                if(SingletonTable::is_number(tmp)){
+                                    double val = std::stod(tmp);
+                                    if(val > max){
+                                        max = val;
+                                    }
+                                }
+                                if(r == bottomRightRow && c == bottomRightCol){
+                                    result = max;
+                                }
+                            }
+                        }
+                    }
+                    // SET THE VALUE OF THE CELL TO THE RESULT
+                    this->value_ = std::to_string(result).substr(0,std::to_string(result).find('.')+4);
+                }
+            }
+        }
+    }
+    // CALCULATE ALL CELL AGAIN //
+    /*
+        SET EVALUATED TRUE IF IT IS A VALID FORMULA WITH VALID RANGE 
+        SET EVALUATED FALSE IF IT IS NOT
+    */
+    for(unsigned mr = 0; mr < table.size(); mr++){
+        for(unsigned mc = 0; mc < table[0].size(); mc++){
+            Cell* acell = const_cast<Cell*>(&table[mr][mc]);
+            
+            if(table[mr][mc].is_formula_ && table[mr][mc].is_formula_right && table[mr][mc].value_ != "#NAME?"){
+                acell->evaluated = false;
+            }else{
+                acell->evaluated = true;
+            }
+            if(table[mr][mc].value_ == "#NAME?"){
+                if(
+                    !(acell->TLR > table.size() ||
+                    acell->BRR > table.size()||
+                    acell->TLC > (table[0].size() - 1)||
+                    acell->BRC > (table[0].size() - 1))
+                ){
+                    acell->evaluated = false;
+                }
+            }
+        }
+    }
+    //SOLVE ALL FORMULAS
+    /*
+        THERE MUST BE AT LEAST ONE SOLVABLE FORMULA TO CONTINUE
+        IT THERE IS NONE -> ALL THE LEFTOVER FORMULAS ARE IN CYCLE
+    */
+    unsigned updated = 1;
+    while(updated != 0){
+        updated = 0;
+        //SET UPDATED 0 EVERY ITERATION
+        for(unsigned mr = 0; mr < table.size(); mr++){
+            for(unsigned mc = 0; mc < table[0].size(); mc++){
+                //ITERATE WHOLE TABLE
+                if(table[mr][mc].is_formula_ && table[mr][mc].is_formula_right && !table[mr][mc].evaluated){
+                    // CHECK CELL IF IT CONTAINS NOT EVALUATED FORMULA
+                    double result = 0;
+                    unsigned counter = 0;
+                    double min = DBL_MAX;
+                    double max = -DBL_MAX;
+                    // DOES THE RANGE OF THIS FORMULA CONTAINS OTHER FORMULAS?
+                    bool has_AGF = false;
+                    for(unsigned r = table[mr][mc].TLR; r <= table[mr][mc].BRR; r++){
+                        for(unsigned c = table[mr][mc].TLC; c <= table[mr][mc].BRC; c++){
+                            //ITERATE THE RANGE OF THE FORMULA
+                            if(!table[r - 1][c].evaluated){
+                                //SET TRUE IF THERE IS AT LEAST ONE FURMULA IN THE RANGE WHICH IS NOT EVALUATED
+                                has_AGF = true;
+                            }else{
+                                // USE THE VALUE TO CALCULATE RESULT, BUT WONT USE IT IF LATER WE FIND AN NOT EVALUATED FORMULA IN THE RANGE 
+                                std::string tmp = table[r-1][c].GetPrint();
+                                if(table[mr][mc].type_ == FormulaType::SUM){
+                                    if(SingletonTable::is_number(tmp)){
+                                        result += std::stod(tmp);
+                                    }
+                                }else if(table[mr][mc].type_ == FormulaType::AVG){
+                                    if(SingletonTable::is_number(tmp)){
+                                        result += std::stod(tmp);
+                                        counter++;
+                                    }
+                                    if(r == table[mr][mc].BRR && c == table[mr][mc].BRC){
+                                        result /= (double)counter;
+                                    }
+                                }else if(table[mr][mc].type_ == FormulaType::MIN){
+                                    if(SingletonTable::is_number(tmp)){
+                                        double val = std::stod(tmp);
+                                        if(val < min){
+                                            min = val;
+                                        }
+                                    }
+                                    if(r == table[mr][mc].BRR && c == table[mr][mc].BRC){
+                                        result = min;
+                                        if(result == DBL_MAX){
+                                            result = 0;
+                                        }
+                                    }
+                                }else if(table[mr][mc].type_ == FormulaType::MAX){
+                                    if(SingletonTable::is_number(tmp)){
+                                        double val = std::stod(tmp);
+                                        if(val > max){
+                                            max = val;
+                                        }
+                                    }
+                                    if(r == table[mr][mc].BRR && c == table[mr][mc].BRC){
+                                        result = max;
+                                        if(result == -DBL_MAX)
+                                            result = 0;
+                                    }
+                                }
+                                //END OF THE ITERATION, CHECK THE NEXT CELL OF THE RANGE
+                            }
+                        }
+                    }
+                    // WE NEED THIS TO OVERWRITE THE VALUE
+                    Cell* acell = const_cast<Cell*>(&table[mr][mc]);
+                    // IS THIS FORMULA IN A CHAIN?
+                    if(!has_AGF){
+                        updated++;
+                        //WE CAN SET IT EVALUATED EVEN IF IT HAS A BAD RANGE
+                        if(
+                            acell->TLR > table.size() ||
+                            acell->BRR > table.size() ||
+                            acell->TLC > table[0].size()-1 ||
+                            acell->BRC > table[0].size()-1
+                        ){
+                            acell->evaluated = false;
+                            acell->value_ = "#NAME?";
+                        }else{
+                            acell->evaluated = true;
+                            acell->value_ = std::to_string(result).substr(0,std::to_string(result).find('.')+4);
                         }
                     }
                 }
-            }else{
-              //  SetError("Wrong position attributes!");
             }
-        }else{
-           // SetError("Wrong position attributes!");
+        }
+        // DEAL WITH LEFTOVER CYCLES
+        if(updated == 0){
+            for(unsigned mr = 0; mr < table.size(); mr++){
+                for(unsigned mc = 0; mc < table[0].size(); mc++){
+                    if(!table[mr][mc].evaluated){
+                        Cell* acell = const_cast<Cell*>(&table[mr][mc]);
+                        acell->value_ = "#CYCLE!";
+                    }
+                }
+            }
+        }
+    }
+}
+void Cell::Refresh(const std::vector<std::vector<Cell>>& table,const std::string& valCheck){
+    for(unsigned mr = 0; mr < table.size(); mr++){
+        for(unsigned mc = 0; mc < table[0].size(); mc++){
+            Cell* acell = const_cast<Cell*>(&table[mr][mc]);
+            
+            if(table[mr][mc].is_formula_ && table[mr][mc].is_formula_right && table[mr][mc].value_ != "#NAME?"){
+                acell->evaluated = false;
+            }else{
+                acell->evaluated = true;
+            }
+            if( 
+                acell->is_formula_ && 
+                acell->is_formula_right &&
+                (acell->TLR > table.size() ||
+                acell->BRR > table.size()||
+                acell->TLC > (table[0].size() - 1)||
+                acell->BRC > (table[0].size() - 1))
+            ){
+                acell->value_ = "#NAME?";
+            }
+            if(table[mr][mc].value_ == "#NAME?"){
+                if(
+                    !(acell->TLR > table.size() ||
+                    acell->BRR > table.size()||
+                    acell->TLC > (table[0].size() - 1)||
+                    acell->BRC > (table[0].size() - 1))
+                ){
+                    acell->evaluated = false;
+                }else{
+                    acell->evaluated = true;
+                }
+            }
+        }
+    }
+    //SOLVE ALL FORMULAS
+    /*
+        THERE MUST BE AT LEAST ONE SOLVABLE FORMULA TO CONTINUE
+        IT THERE IS NONE -> ALL THE LEFTOVER FORMULAS ARE IN CYCLE
+    */
+    unsigned updated = 1;
+    while(updated != 0){
+        updated = 0;
+        //SET UPDATED 0 EVERY ITERATION
+        for(unsigned mr = 0; mr < table.size(); mr++){
+            for(unsigned mc = 0; mc < table[0].size(); mc++){
+                //ITERATE WHOLE TABLE
+                if(table[mr][mc].is_formula_ && table[mr][mc].is_formula_right && !table[mr][mc].evaluated){
+                    // CHECK CELL IF IT CONTAINS NOT EVALUATED FORMULA
+                    double result = 0;
+                    unsigned counter = 0;
+                    double min = DBL_MAX;
+                    double max = -DBL_MAX;
+                    // DOES THE RANGE OF THIS FORMULA CONTAINS OTHER FORMULAS?
+                    bool has_AGF = false;
+                    for(unsigned r = table[mr][mc].TLR; r <= table[mr][mc].BRR; r++){
+                        for(unsigned c = table[mr][mc].TLC; c <= table[mr][mc].BRC; c++){
+                            //ITERATE THE RANGE OF THE FORMULA
+                            if(!table[r - 1][c].evaluated){
+                                //SET TRUE IF THERE IS AT LEAST ONE FURMULA IN THE RANGE WHICH IS NOT EVALUATED
+                                has_AGF = true;
+                            }else{
+                                // USE THE VALUE TO CALCULATE RESULT, BUT WONT USE IT IF LATER WE FIND AN NOT EVALUATED FORMULA IN THE RANGE 
+                                std::string tmp = table[r-1][c].GetPrint();
+                                if(table[mr][mc].type_ == FormulaType::SUM){
+                                    if(SingletonTable::is_number(tmp)){
+                                        result += std::stod(tmp);
+                                    }
+                                }else if(table[mr][mc].type_ == FormulaType::AVG){
+                                    if(SingletonTable::is_number(tmp)){
+                                        result += std::stod(tmp);
+                                        counter++;
+                                    }
+                                    if(r == table[mr][mc].BRR && c == table[mr][mc].BRC){
+                                        result /= (double)counter;
+                                    }
+                                }else if(table[mr][mc].type_ == FormulaType::MIN){
+                                    if(SingletonTable::is_number(tmp)){
+                                        double val = std::stod(tmp);
+                                        if(val < min){
+                                            min = val;
+                                        }
+                                    }
+                                    if(r == table[mr][mc].BRR && c == table[mr][mc].BRC){
+                                        result = min;
+                                        if(result == DBL_MAX){
+                                            result = 0;
+                                        }
+                                    }
+                                }else if(table[mr][mc].type_ == FormulaType::MAX){
+                                    if(SingletonTable::is_number(tmp)){
+                                        double val = std::stod(tmp);
+                                        if(val > max){
+                                            max = val;
+                                        }
+                                    }
+                                    if(r == table[mr][mc].BRR && c == table[mr][mc].BRC){
+                                        result = max;
+                                        if(result == -DBL_MAX)
+                                            result = 0;
+                                    }
+                                }
+                                //END OF THE ITERATION, CHECK THE NEXT CELL OF THE RANGE
+                            }
+                        }
+                    }
+                    // WE NEED THIS TO OVERWRITE THE VALUE
+                    Cell* acell = const_cast<Cell*>(&table[mr][mc]);
+                    // IS THIS FORMULA IN A CHAIN?
+                    if(!has_AGF){
+                        updated++;
+                        //WE CAN SET IT EVALUATED EVEN IF IT HAS A BAD RANGE
+                        if(
+                            acell->TLR > table.size() ||
+                            acell->BRR > table.size() ||
+                            acell->TLC > table[0].size()-1 ||
+                            acell->BRC > table[0].size()-1
+                        ){
+                            acell->evaluated = false;
+                            acell->value_ = "#NAME?";
+                        }else{
+                            acell->evaluated = true;
+                            acell->value_ = std::to_string(result).substr(0,std::to_string(result).find('.')+4);
+                        }
+                    }
+                }
+            }
+        }
+        // DEAL WITH LEFTOVER CYCLES
+        if(updated == 0){
+            for(unsigned mr = 0; mr < table.size(); mr++){
+                for(unsigned mc = 0; mc < table[0].size(); mc++){
+                    if(!table[mr][mc].evaluated){
+                        Cell* acell = const_cast<Cell*>(&table[mr][mc]);
+                        acell->value_ = "#CYCLE!";
+                    }
+                }
+            }
         }
     }
 }
