@@ -1060,6 +1060,11 @@ bool SingletonTable::compare_func(const Cell& a,const Cell& b, const SortType& s
     return a<b;
 }
 
+/*! \brief CalculateFormula:
+ * Calculates the aggregator functions: SUM, AVG, MIN, MAX
+ * Parameters: const std::vector<std::vector<Cell>>& table, const std::string& formula \n
+ */
+
 void Cell::CalculateFormula(const std::vector<std::vector<Cell>>& table,const std::string& formula){
     //BASIC INPUT VALIDATION
     unsigned errorCode = 0;
@@ -1316,6 +1321,11 @@ void Cell::CalculateFormula(const std::vector<std::vector<Cell>>& table,const st
         }
     }
 }
+
+/*! \brief Refresh:
+ * Static method of the cell that reruns all formulas in the table
+ * Parameters: const std::vector<std::vector<Cell>>& table, const std::string& valCheck \n
+ */
 void Cell::Refresh(const std::vector<std::vector<Cell>>& table,const std::string& valCheck){
     for(unsigned mr = 0; mr < table.size(); mr++){
         for(unsigned mc = 0; mc < table[0].size(); mc++){

@@ -38,6 +38,7 @@ public:
         CalculateFormula(table,value);
     }   
     static void Refresh(const std::vector<std::vector<Cell>>& table,const std::string&);
+    /*!  = operator overloading */
     Cell& operator=(Cell other){
         align_=other.align_;
         value_=other.value_;
@@ -55,23 +56,23 @@ public:
     int GetAlign() const{ /*! return value of align */
         return align_;
     }
-    std::string GetValue() const{   /*! return the value of the cell */
+    std::string GetValue() const{   /*! return the value or the formula of the cell */
         if(this->is_formula_ && this->is_formula_right){
             return formula_;
         }else{
             return value_;
         }
     }
-    std::string GetPrint() const{
+    std::string GetPrint() const{  /*! get the value of print */
         return value_;
     }
-    std::string GetFormula() const{
+    std::string GetFormula() const{  /*! get the formula */
         return formula_;
     }
     void SetAlign(int align){       /*! set the value of align */
         this->align_ = align;
     }
-    void SetValue(const std::vector<std::vector<Cell>>& table, std::string value){  /*! set the value of the cell */
+    void SetValue(const std::vector<std::vector<Cell>>& table, std::string value){  /*! set the value of the cell with CalculateFormula */
         CalculateFormula(table,value);
     }
     friend bool operator<(const Cell& a,const Cell& b);
@@ -110,7 +111,7 @@ protected:
     void Clear(const std::string&);                                     
     void Swap(const std::string&);                                     
     void Sort(const std::string&);
-    void RefreshTable(){
+    void RefreshTable(){  /*! calls the refresh function on the table */
         Cell::Refresh(this->table_,"");
     }                                      
     enum SortType{                                                      
