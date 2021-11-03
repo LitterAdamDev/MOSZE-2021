@@ -113,7 +113,8 @@ protected:
     void Sort(const std::string&);
     void RefreshTable(){  /*! calls the refresh function on the table */
         Cell::Refresh(this->table_,"");
-    }                                      
+    }
+    void BarChart(const std::string&);                                      
     enum SortType{                                                      
         asc=1,
         desc=0

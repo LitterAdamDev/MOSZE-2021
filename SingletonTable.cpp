@@ -716,6 +716,8 @@ void SingletonTable::ExecuteCommand(const std::string& command){
         Align(param);
     }else if(commandType == "sort"){
         Sort(param);
+    }else if(commandType == "barchart"){
+        BarChart(param);
     }else{
         SetError("There is no command with the name \"" + commandType + "\"!");
     }
@@ -1464,5 +1466,143 @@ void Cell::Refresh(const std::vector<std::vector<Cell>>& table,const std::string
                 }
             }
         }
+    }
+}
+
+/*! \brief BarChart:
+ * Generates an SVG diagram representing a grouped bar graph from a specified range. \n
+ * The cells in the first column of the range are the labels of the X-axis points, and the first row is the name of the data series. \n
+ * Parameters: const string &attrs
+ */
+void SingletonTable::BarChart(const std::string &attrs){
+    std::vector<std::string> parts;
+    SplitString(attrs,parts);
+    if(parts.size() == 2){
+        int pos = parts[0].find(':');
+        if(pos != -1){
+            if (parts[1].substr(parts[1].length()-5) == ".html" || parts[1].substr(parts[1].length()-4) == ".svg"){
+                std::string firstCell = parts[0].substr(0,pos);
+                std::string secondCell = parts[0].substr(pos+1,parts[0].length());
+                if(
+                    isalpha(firstCell[0]) &&
+                    is_number(firstCell.substr(1,firstCell.length())) &&
+                    isalpha(secondCell[0]) &&
+                    is_number(secondCell.substr(1,secondCell.length()))
+                ){
+                    int topLeftRow;
+                    int topLeftCol;
+                    int bottomRightRow;
+                    int bottomRightCol;
+                    if(firstCell == secondCell){
+                        SetError("Wrong range parameters!");
+                    }else{
+                        topLeftRow = stoi(firstCell.substr(1,firstCell.length())) < stoi(secondCell.substr(1,secondCell.length()))?
+                        stoi(firstCell.substr(1,firstCell.length())) : stoi(secondCell.substr(1,secondCell.length()));
+                        bottomRightRow = stoi(firstCell.substr(1,firstCell.length())) > stoi(secondCell.substr(1,secondCell.length()))?
+                        stoi(firstCell.substr(1,firstCell.length())) : stoi(secondCell.substr(1,secondCell.length()));
+                        topLeftCol = int(std::toupper(firstCell[0]) - 'A') < int(std::toupper(secondCell[0]) - 'A')?
+                        int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
+                        bottomRightCol = int(std::toupper(firstCell[0]) - 'A') > int(std::toupper(secondCell[0]) - 'A')?
+                        int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
+                        
+                        int first;
+                        int second;
+                        int first_diff;
+                        int diff;
+                        bool ascending = true;
+                        for(unsigned c = topLeftCol+1; c < bottomRightCol; c++){
+                            std::istringstream (table_[topLeftRow-1][c].GetValue()) >> first;
+                            std::istringstream (table_[topLeftRow-1][c+1].GetValue()) >> second;
+                            if(c == topLeftCol+1){first_diff = second-first;}
+                            else{
+                                diff = second-first;;
+                            }
+                            if(first >= second && diff != first_diff){
+                               ascending = false;
+                            }
+                        } 
+                        
+                        if(ascending){
+                            int x_axis_coord = 20;
+                            int y_axis_coord;
+                            int y_axis_height = 25 *bottomRightCol-topLeftCol;
+                            int y;
+                            int x = 10;
+                            int height;
+                            int counter;
+                            int cell_value;
+                            int smallest;
+                            
+
+                            std::ofstream out(parts[1]);
+                            if (parts[1].substr(parts[1].length()-5) == ".html"){
+                                out << "<style>"<< '\n';  
+                                out << ".bar {fill: #bd0202;}"<< '\n';        
+                                out << ".axis {font: 12px sans-serif;}"<< '\n';;        
+                                out << ".axis line {fill: none;stroke: #000;shape-rendering: crispEdges;}"<< '\n';     
+                                out << "</style>"<< '\n';
+                            }
+                            out << "<svg height='auto' width='auto' >"<< '\n';  
+                            out << "<g  transform='translate(40,50)'>"<< '\n';  
+                            out << "<g class=' axis' transform='translate(0,"<< y_axis_height << ")'>" << '\n';
+                            // x axis
+                            for(unsigned i = topLeftCol+1; i <= bottomRightCol; i++){
+                                for(unsigned r = topLeftRow; r <= bottomRightRow; r++){     
+                                    out << "<g  transform='translate("<< x_axis_coord << ",0)'><line y2='6' x2='0'></line>" << '\n';
+                                    out << "<text dy='1em' y='9' x='0' style='text-anchor: middle;'>" << table_[r][topLeftCol].GetValue() << "</text>" << '\n';            
+                                    out << "</g>" << '\n';
+                                    x_axis_coord += 25;
+                                }
+                                x_axis_coord+=20;
+                                out << "<g  transform='translate("<< x_axis_coord << ",0)'>" << '\n';
+                                out << "</g>" << '\n';
+                            }
+                            out << "</g>" << '\n';
+                            out << "<g class='y axis'>" << '\n';
+                            counter=0;
+                            // y axis
+                        
+                            for(unsigned c = topLeftCol+1; c <= bottomRightCol; c++){
+                                int y_axis_coord = y_axis_height - counter*25;
+                                counter++;
+                                out << "<g  transform='translate(0,"<< y_axis_coord << ")'><line x2='-6' y2='0'></line>" << '\n';
+                                out << "<text dy='.2em' x='-15' y='0' style='text-anchor: end;'>" << table_[topLeftRow-1][c].GetValue() << "</text>" << '\n';            
+                                out << "</g>" << '\n';
+                            } 
+
+                            std::istringstream (table_[topLeftRow-1][topLeftCol+1].GetValue()) >> smallest;
+                            
+                            out << "<!--" << smallest << "-->" << '\n';
+                            out << "<line x1='0' y1='0' x2='0' y2='" << y_axis_height << "' />" << '\n';
+                            out << "</g>" << '\n';
+                        
+                            for(unsigned c = topLeftCol+1; c <= bottomRightCol; c++){ 
+                                for(unsigned r = topLeftRow; r <= bottomRightRow; r++){
+                                    std::istringstream (table_[r][c].GetValue()) >> cell_value;
+                                    height = (25 * (cell_value - smallest)+1) / diff;
+                                    if(height<=0){height = 1;}                       
+                                    y = y_axis_height - height;
+                                    out << "<rect class='bar' x='"<< x <<"' width='20' y='"<< y <<"' height='" << height << "'></rect>" << '\n'; 
+                                    x += 25;
+                                }
+                                x+=20;
+                            }
+                            out << "</g>" << '\n';
+                            out << "</svg>" << '\n';
+                        }else{
+                            SetError("Only works with ascending row of numbers on y-axis!");
+                        }
+                    }
+                }else{
+                    SetError("Wrong position attributes!");
+                }
+            }else{
+                SetError("Wrong file name!");
+            }
+        }else{
+           SetError("Wrong range parameter format!");
+        }
+    }else{
+        SetError("Wrong attributes!");
     }
 }

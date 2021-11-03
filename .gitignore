@@ -7,6 +7,9 @@ main
 generated_output.txt
 /docs
 .log
+*html
+*svg
+
 
 !example.csv
 *.out
