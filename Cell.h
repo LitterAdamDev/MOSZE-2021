@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include <float.h>
 
 /*! \brief Cell class:
  * for the table cells

@@ -1,11 +1,14 @@
-#include <Cell.h>
-#include <SingletonTable.h>
+#include "Cell.h"
 
 /*! \brief CalculateFormula: \n
  * Calculates the aggregator functions: SUM, AVG, MIN, MAX \n
  * Parameters: const std::vector<std::vector<Cell>>& table, const std::string& formula \n
  */
-
+bool is_number(const std::string& s){
+    std::string::const_iterator it = s.begin();
+    while (it != s.end() && (std::isdigit(*it) || *it == '.')) ++it;
+    return !s.empty() && it == s.end();
+}
 void Cell::CalculateFormula(const std::vector<std::vector<Cell>>& table,const std::string& formula){
     //BASIC INPUT VALIDATION
     unsigned errorCode = 0;
@@ -49,9 +52,9 @@ void Cell::CalculateFormula(const std::vector<std::vector<Cell>>& table,const st
             // VALIDATE COORINATES
             if(
                 isalpha(firstCell[0]) &&
-                SingletonTable::is_number(firstCell.substr(1,firstCell.length())) &&
+                is_number(firstCell.substr(1,firstCell.length())) &&
                 isalpha(secondCell[0]) &&
-                SingletonTable::is_number(secondCell.substr(1,secondCell.length()))
+                is_number(secondCell.substr(1,secondCell.length()))
             ){
                 int topLeftRow;
                 int topLeftCol;
@@ -90,19 +93,21 @@ void Cell::CalculateFormula(const std::vector<std::vector<Cell>>& table,const st
                         for(unsigned c = topLeftCol; c <= bottomRightCol; c++){
                             std::string tmp = table[r-1][c].GetValue();
                             if(this->type_ == FormulaType::SUM){
-                                if(SingletonTable::is_number(tmp)){
+                                if(is_number(tmp)){
                                     result += std::stod(tmp);
                                 }
                             }else if(this->type_ == FormulaType::AVG){
-                                if(SingletonTable::is_number(tmp)){
+                                if(is_number(tmp)){
                                     result += std::stod(tmp);
                                     counter++;
                                 }
                                 if(r == bottomRightRow && c == bottomRightCol){
-                                    result /= (double)counter;
+                                    if(counter != 0){
+                                        result /= (double)counter;
+                                    }
                                 }
                             }else if(this->type_ == FormulaType::MIN){
-                                if(SingletonTable::is_number(tmp)){
+                                if(is_number(tmp)){
                                     double val = std::stod(tmp);
                                     if(val < min){
                                         min = val;
@@ -112,7 +117,7 @@ void Cell::CalculateFormula(const std::vector<std::vector<Cell>>& table,const st
                                     result = min;
                                 }
                             }else if(this->type_ = FormulaType::MAX){
-                                if(SingletonTable::is_number(tmp)){
+                                if(is_number(tmp)){
                                     double val = std::stod(tmp);
                                     if(val > max){
                                         max = val;
@@ -186,19 +191,21 @@ void Cell::CalculateFormula(const std::vector<std::vector<Cell>>& table,const st
                                 // USE THE VALUE TO CALCULATE RESULT, BUT WONT USE IT IF LATER WE FIND AN NOT EVALUATED FORMULA IN THE RANGE 
                                 std::string tmp = table[r-1][c].GetPrint();
                                 if(table[mr][mc].type_ == FormulaType::SUM){
-                                    if(SingletonTable::is_number(tmp)){
+                                    if(is_number(tmp)){
                                         result += std::stod(tmp);
                                     }
                                 }else if(table[mr][mc].type_ == FormulaType::AVG){
-                                    if(SingletonTable::is_number(tmp)){
+                                    if(is_number(tmp)){
                                         result += std::stod(tmp);
                                         counter++;
                                     }
                                     if(r == table[mr][mc].BRR && c == table[mr][mc].BRC){
-                                        result /= (double)counter;
+                                        if(counter != 0){
+                                            result /= (double)counter;
+                                        }
                                     }
                                 }else if(table[mr][mc].type_ == FormulaType::MIN){
-                                    if(SingletonTable::is_number(tmp)){
+                                    if(is_number(tmp)){
                                         double val = std::stod(tmp);
                                         if(val < min){
                                             min = val;
@@ -211,7 +218,7 @@ void Cell::CalculateFormula(const std::vector<std::vector<Cell>>& table,const st
                                         }
                                     }
                                 }else if(table[mr][mc].type_ == FormulaType::MAX){
-                                    if(SingletonTable::is_number(tmp)){
+                                    if(is_number(tmp)){
                                         double val = std::stod(tmp);
                                         if(val > max){
                                             max = val;
@@ -331,19 +338,21 @@ void Cell::Refresh(const std::vector<std::vector<Cell>>& table,const std::string
                                 // USE THE VALUE TO CALCULATE RESULT, BUT WONT USE IT IF LATER WE FIND AN NOT EVALUATED FORMULA IN THE RANGE 
                                 std::string tmp = table[r-1][c].GetPrint();
                                 if(table[mr][mc].type_ == FormulaType::SUM){
-                                    if(SingletonTable::is_number(tmp)){
+                                    if(is_number(tmp)){
                                         result += std::stod(tmp);
                                     }
                                 }else if(table[mr][mc].type_ == FormulaType::AVG){
-                                    if(SingletonTable::is_number(tmp)){
+                                    if(is_number(tmp)){
                                         result += std::stod(tmp);
                                         counter++;
                                     }
                                     if(r == table[mr][mc].BRR && c == table[mr][mc].BRC){
-                                        result /= (double)counter;
+                                        if(counter != 0){
+                                            result /= (double)counter;
+                                        }
                                     }
                                 }else if(table[mr][mc].type_ == FormulaType::MIN){
-                                    if(SingletonTable::is_number(tmp)){
+                                    if(is_number(tmp)){
                                         double val = std::stod(tmp);
                                         if(val < min){
                                             min = val;
@@ -356,7 +365,7 @@ void Cell::Refresh(const std::vector<std::vector<Cell>>& table,const std::string
                                         }
                                     }
                                 }else if(table[mr][mc].type_ == FormulaType::MAX){
-                                    if(SingletonTable::is_number(tmp)){
+                                    if(is_number(tmp)){
                                         double val = std::stod(tmp);
                                         if(val > max){
                                             max = val;
