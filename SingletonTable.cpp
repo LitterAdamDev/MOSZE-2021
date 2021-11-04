@@ -1515,23 +1515,20 @@ void SingletonTable::BarChart(const std::string &attrs){
                             }
                             r++;
                         }
-                        if (number){
-                            int first;
-                            int second;
+                        if (number){   
                             int diff;
-
                             bool ascending = true;
                             unsigned c = topLeftCol+1;
                             while(c < bottomRightCol && ascending){
-                                std::istringstream (table_[topLeftRow-1][c].GetValue()) >> first;
-                                std::istringstream (table_[topLeftRow-1][c+1].GetValue()) >> second;
-                                if(c == topLeftCol+1){diff = second-first;}
-                                if(first >= second || diff != second-first){
+                                if(c == topLeftCol+1){
+                                    diff = stoi(table_[topLeftRow-1][c+1].GetValue())-stoi(table_[topLeftRow-1][c].GetValue());
+                                    }
+                                if(stoi(table_[topLeftRow-1][c].GetValue()) >= stoi(table_[topLeftRow-1][c+1].GetValue()) 
+                                || diff != stoi(table_[topLeftRow-1][c+1].GetValue())-stoi(table_[topLeftRow-1][c].GetValue())){
                                     ascending = false;
                                 }
                                 c++;
                             } 
-                        
                             if(ascending){
                                 int x_axis_coord = 20;
                                 int y_axis_coord;
@@ -1540,9 +1537,6 @@ void SingletonTable::BarChart(const std::string &attrs){
                                 int x = 10;
                                 int height;
                                 int counter;
-                                int cell_value;
-                                int smallest;
-                                
 
                                 std::ofstream out(parts[1]);
                                 if (parts[1].substr(parts[1].length()-5) == ".html"){
@@ -1555,7 +1549,7 @@ void SingletonTable::BarChart(const std::string &attrs){
                                 out << "<svg height='100%' width='100%' version='1.1' xmlns='http://www.w3.org/2000/svg'>"<< '\n';  
                                 out << "<g  transform='translate(40,50)'>"<< '\n';  
                                 out << "<g class=' axis' transform='translate(0,"<< y_axis_height << ")'>" << '\n';
-                                // x axis
+                             // x axis
                                 for(unsigned i = topLeftCol+1; i <= bottomRightCol; i++){
                                     for(unsigned r = topLeftRow; r < bottomRightRow; r++){     
                                         out << "<g  transform='translate("<< x_axis_coord << ",0)'><line y2='6' x2='0'></line>" << '\n';
@@ -1570,8 +1564,7 @@ void SingletonTable::BarChart(const std::string &attrs){
                                 out << "</g>" << '\n';
                                 out << "<g class='y axis'>" << '\n';
                                 counter=0;
-                                // y axis
-                            
+                            // y axis
                                 for(unsigned c = topLeftCol+1; c <= bottomRightCol; c++){
                                     int y_axis_coord = y_axis_height - counter*25;
                                     counter++;
@@ -1579,16 +1572,11 @@ void SingletonTable::BarChart(const std::string &attrs){
                                     out << "<text dy='.2em' x='-15' y='0' style='text-anchor: end;'>" << table_[topLeftRow-1][c].GetValue() << "</text>" << '\n';            
                                     out << "</g>" << '\n';
                                 } 
-
-                                std::istringstream (table_[topLeftRow-1][topLeftCol+1].GetValue()) >> smallest;
-                                
                                 out << "<line x1='0' y1='0' x2='0' y2='" << y_axis_height << "' />" << '\n';
                                 out << "</g>" << '\n';
-                            
                                 for(unsigned c = topLeftCol+1; c <= bottomRightCol; c++){ 
                                     for(unsigned r = topLeftRow; r < bottomRightRow; r++){
-                                        std::istringstream (table_[r][c].GetValue()) >> cell_value;
-                                        height = (25 * (cell_value - smallest)+1) / diff;
+                                        height = (25 * (stoi(table_[r][c].GetValue()) - stoi(table_[topLeftRow-1][topLeftCol+1].GetValue()))+1) / diff;
                                         if(height<=0){height = 1;}                       
                                         y = y_axis_height - height;
                                         out << "<rect class='bar' x='"<< x <<"' width='20' y='"<< y <<"' height='" << height << "'></rect>" << '\n'; 
