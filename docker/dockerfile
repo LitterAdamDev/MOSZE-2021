@@ -7,5 +7,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   texlive-latex-extra \
   graphviz \
   doxygen \
-  g++ \
+  build-essential \
 && rm -rf /var/lib/apt/lists/*
+
