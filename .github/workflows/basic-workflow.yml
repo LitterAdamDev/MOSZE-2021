@@ -5,6 +5,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: quaranteam1/quaranteam:latest
     steps:
       - uses: actions/checkout@v2
       - name: Build the application
@@ -25,9 +26,9 @@ jobs:
 
   doxygen:
     runs-on: ubuntu-latest
+    container: quaranteam1/quaranteam:latest
     steps:
     - uses: actions/checkout@v2
-    - run: sudo apt install doxygen graphviz texlive-latex-extra
     - run: doxygen doxyconf 
     - name: make pdf from latex
       working-directory:  docs/latex/
