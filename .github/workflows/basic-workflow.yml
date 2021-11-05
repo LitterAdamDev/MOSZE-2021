@@ -31,7 +31,6 @@ jobs:
     - uses: actions/checkout@v2
     - run: doxygen doxyconf 
     - name: make pdf from latex
-      working-directory:  docs/latex/
       run: make
     - name: Upload artifact
       uses: actions/upload-artifact@v2
