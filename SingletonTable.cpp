@@ -722,8 +722,8 @@ void SingletonTable::Swap(const std::string &attrs){
             std::string row_st;
             for (unsigned int adrs_i=0; adrs_i<parts.size(); adrs_i++){
                 col_chr=(char) std::toupper(parts[adrs_i][0]);
-                adrs_arr[adrs_i].col=(unsigned) (col_chr - 'A') +1 ;
-                if (adrs_arr[adrs_i].col >table_[adrs_arr[adrs_i].col].size()){
+                adrs_arr[adrs_i].col = (unsigned) (col_chr - 'A') + 1;
+                if (adrs_arr[adrs_i].col > table_[0].size()){
                     errorCode=4;
                     break;
                 }
