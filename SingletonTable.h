@@ -48,7 +48,7 @@ public:
     }
     void SetAlign(const std::ios::fmtflags align){       
         /*! set the value of align for the cell 
-            @type align: std::ios::left|std::ios::right
+        *    \param std::ios::left|std::ios::right
         */
         this->align_ = align;
     }
