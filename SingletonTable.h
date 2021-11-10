@@ -46,7 +46,10 @@ public:
     std::string GetValue() const{   /*! return the value of the cell */
         return value_;
     }
-    void SetAlign(const std::ios::fmtflags align){       /*! set the value of align */
+    void SetAlign(const std::ios::fmtflags align){       
+        /*! set the value of align for the cell 
+            @type align: std::ios::left|std::ios::right
+        */
         this->align_ = align;
     }
     void SetValue(std::string value){  /*! set the value of the cell */
