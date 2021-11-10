@@ -466,11 +466,12 @@ void SingletonTable::Align(const std::string &attrs){
                     if(firstCell == secondCell){
                         int col = int(std::toupper(firstCell[0]) - 'A');
                         int row = stoi(firstCell.substr(1,firstCell.length()));
-                        if(parts[1] == "left"){
-                            table_[row-1][col].SetAlign(std::ios::left);
-                        }else{
-                            table_[row-1][col].SetAlign(std::ios::right);
-                        }
+                        if(row-1 < table_.size() && col < table_[0].size())
+                            if(parts[1] == "left"){
+                                table_[row-1][col].SetAlign(std::ios::left);
+                            }else{
+                                table_[row-1][col].SetAlign(std::ios::right);
+                            }
                     }else{
                         topLeftRow = stoi(firstCell.substr(1,firstCell.length())) < stoi(secondCell.substr(1,secondCell.length()))?
                         stoi(firstCell.substr(1,firstCell.length())) : stoi(secondCell.substr(1,secondCell.length()));
@@ -482,11 +483,12 @@ void SingletonTable::Align(const std::string &attrs){
                         int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
                         for(unsigned r = topLeftRow; r <= bottomRightRow; r++){
                             for(unsigned c = topLeftCol; c <= bottomRightCol; c++){
-                                if(parts[1] == "left"){
-                                    table_[r-1][c].SetAlign(std::ios::left);
-                                }else{
-                                    table_[r-1][c].SetAlign(std::ios::right);
-                                }
+                                if(r-1 < table_.size() && c < table_[0].size())
+                                    if(parts[1] == "left"){
+                                        table_[r-1][c].SetAlign(std::ios::left);
+                                    }else{
+                                        table_[r-1][c].SetAlign(std::ios::right);
+                                    }
                             }
                         }
                     }
@@ -540,7 +542,8 @@ void SingletonTable::Clear(const std::string &attrs){
                 if(firstCell == secondCell){
                     int col = int(std::toupper(firstCell[0]) - 'A');
                     int row = stoi(firstCell.substr(1,firstCell.length()));
-                    table_[row-1][col].SetValue("");
+                    if(row-1 < table_.size() && col < table_[0].size())
+                        table_[row-1][col].SetValue("");
                 }else{
                     topLeftRow = stoi(firstCell.substr(1,firstCell.length())) < stoi(secondCell.substr(1,secondCell.length()))?
                     stoi(firstCell.substr(1,firstCell.length())) : stoi(secondCell.substr(1,secondCell.length()));
@@ -552,7 +555,8 @@ void SingletonTable::Clear(const std::string &attrs){
                     int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
                     for(unsigned r = topLeftRow; r <= bottomRightRow; r++){
                         for(unsigned c = topLeftCol; c <= bottomRightCol; c++){
-                            table_[r-1][c].SetValue("");
+                            if(r-1 < table_.size() && c < table_[0].size())
+                                table_[r-1][c].SetValue("");
                         }
                     }
                 }
