@@ -24,8 +24,8 @@ public:
     /*! \brief Constructor of Cell class:
     *  Contains data of the cell .
     *  Initialize: align with align - default is left, value with value.
-    *  \param string value
-    *  \param string = std::ios::left
+    *  \param value  Initialize the content of the cell.
+    *  \param align  Initialize the align of the cell.
     
     */
     Cell(){}        
@@ -48,7 +48,7 @@ public:
     }
     void SetAlign(const std::ios::fmtflags align){       
         /*! set the value of align for the cell 
-        *    \param std::ios::left|std::ios::right
+        *    \param align  Sets the align to std::ios::left or std::ios::right.
         */
         this->align_ = align;
     }
