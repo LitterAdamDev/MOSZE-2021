@@ -773,7 +773,6 @@ void SingletonTable::Sort(const std::string &attrs){
     SortBy sby;
     unsigned col_row_num;
     Cell tmp;
-    std::vector<Cell> col_vec;
     // Check argument count
     if(parts.size() < 2){
         errorCode = 1;  
@@ -853,29 +852,27 @@ void SingletonTable::Sort(const std::string &attrs){
             for (unsigned i=0; i<table_[col_row_num-1].size();i++){
                 for (unsigned index=0; index<=table_[col_row_num-1].size()-2; index++){
                     if (compare_func(table_[col_row_num-1][index], table_[col_row_num-1][index+1],stype)){
-                        tmp=table_[col_row_num-1][index];
-                        table_[col_row_num-1][index]=table_[col_row_num-1][index+1];
-                        table_[col_row_num-1][index+1]=tmp;
+                        for (unsigned rowToSwapIn=0; rowToSwapIn<=table_.size()-1; rowToSwapIn++){
+                            tmp=table_[rowToSwapIn][index];
+                            table_[rowToSwapIn][index]=table_[rowToSwapIn][index+1];
+                            table_[rowToSwapIn][index+1]=tmp;
+                        }
                     }
                 }
             }
         }
         else{
-            for (auto& row_vec : table_){
-                col_vec.push_back(row_vec[col_row_num-1]);
-            }
-            for (unsigned i=0; i<col_vec.size();i++){
-                for (unsigned index=0; index<=col_vec.size()-2; index++){
-                    if (compare_func(col_vec[index], col_vec[index+1],stype)){
-                        tmp=col_vec[index];
-                        col_vec[index]=col_vec[index+1];
-                        col_vec[index+1]=tmp;
+            for (unsigned i=0; i<table_.size();i++){
+                for (unsigned index=0; index<=table_.size()-2; index++){
+                    if (compare_func(table_[index][col_row_num-1], table_[index+1][col_row_num-1],stype)){
+                        for (unsigned colToSwapIn=0; colToSwapIn<=table_[col_row_num-1].size()-1; colToSwapIn++){
+                            tmp=table_[index][colToSwapIn];
+                            table_[index][colToSwapIn]=table_[index+1][colToSwapIn];
+                            table_[index+1][colToSwapIn]=tmp;
+                        }
+
                     }
                 }
-            }
-            for (unsigned i=0; i<col_vec.size();i++){
-                // kell assignment operator a cell classban
-                table_[i][col_row_num-1]=col_vec[i];
             }
         }
         break;
