@@ -1505,92 +1505,96 @@ void SingletonTable::BarChart(const std::string &attrs){
                         bottomRightCol = int(std::toupper(firstCell[0]) - 'A') > int(std::toupper(secondCell[0]) - 'A')?
                         int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
                         
-                        bool number=true;
-                        unsigned r = topLeftRow;
-                        while( r < bottomRightRow && number){
-                            for(unsigned c = topLeftCol+1; c <= bottomRightCol; c++){
-                                if(!is_number(table_[r][c].GetValue())){
-                                    number = false; 
-                                }
-                            }
-                            r++;
-                        }
-                        if (number){   
-                            int diff;
-                            bool ascending = true;
-                            unsigned c = topLeftCol+1;
-                            while(c < bottomRightCol && ascending){
-                                if(c == topLeftCol+1){
-                                    diff = stoi(table_[topLeftRow-1][c+1].GetValue())-stoi(table_[topLeftRow-1][c].GetValue());
-                                    }
-                                if(stoi(table_[topLeftRow-1][c].GetValue()) >= stoi(table_[topLeftRow-1][c+1].GetValue()) 
-                                || diff != stoi(table_[topLeftRow-1][c+1].GetValue())-stoi(table_[topLeftRow-1][c].GetValue())){
-                                    ascending = false;
-                                }
-                                c++;
-                            } 
-                            if(ascending){
-                                int x_axis_coord = 20;
-                                int y_axis_coord;
-                                int y_axis_height = 25 *bottomRightCol-topLeftCol;
-                                int y;
-                                int x = 10;
-                                int height;
-                                int counter;
-
-                                std::ofstream out(parts[1]);
-                                if (parts[1].substr(parts[1].length()-5) == ".html"){
-                                    out << "<style>"<< '\n';  
-                                    out << ".bar {fill: #bd0202;}"<< '\n';        
-                                    out << ".axis {font: 12px sans-serif;}"<< '\n';;        
-                                    out << ".axis line {fill: none;stroke: #000;shape-rendering: crispEdges;}"<< '\n';     
-                                    out << "</style>"<< '\n';
-                                }
-                                out << "<svg height='100%' width='100%' version='1.1' xmlns='http://www.w3.org/2000/svg'>"<< '\n';  
-                                out << "<g  transform='translate(40,50)'>"<< '\n';  
-                                out << "<g class=' axis' transform='translate(0,"<< y_axis_height << ")'>" << '\n';
-                             // x axis
-                                for(unsigned i = topLeftCol+1; i <= bottomRightCol; i++){
-                                    for(unsigned r = topLeftRow; r < bottomRightRow; r++){     
-                                        out << "<g  transform='translate("<< x_axis_coord << ",0)'><line y2='6' x2='0'></line>" << '\n';
-                                        out << "<text dy='1em' y='9' x='0' style='text-anchor: middle;'>" << table_[r][topLeftCol].GetValue() << "</text>" << '\n';            
-                                        out << "</g>" << '\n';
-                                        x_axis_coord += 25;
-                                    }
-                                    x_axis_coord+=20;
-                                    out << "<g  transform='translate("<< x_axis_coord << ",0)'>" << '\n';
-                                    out << "</g>" << '\n';
-                                }
-                                out << "</g>" << '\n';
-                                out << "<g class='y axis'>" << '\n';
-                                counter=0;
-                            // y axis
+                        if(table_.size()>=bottomRightRow &&  table_[0].size()>=bottomRightCol ){
+                            bool number=true;
+                            unsigned r = topLeftRow;
+                            while( r < bottomRightRow && number){
                                 for(unsigned c = topLeftCol+1; c <= bottomRightCol; c++){
-                                    int y_axis_coord = y_axis_height - counter*25;
-                                    counter++;
-                                    out << "<g  transform='translate(0,"<< y_axis_coord << ")'><line x2='-6' y2='0'></line>" << '\n';
-                                    out << "<text dy='.2em' x='-15' y='0' style='text-anchor: end;'>" << table_[topLeftRow-1][c].GetValue() << "</text>" << '\n';            
-                                    out << "</g>" << '\n';
-                                } 
-                                out << "<line x1='0' y1='0' x2='0' y2='" << y_axis_height << "' />" << '\n';
-                                out << "</g>" << '\n';
-                                for(unsigned c = topLeftCol+1; c <= bottomRightCol; c++){ 
-                                    for(unsigned r = topLeftRow; r < bottomRightRow; r++){
-                                        height = (25 * (stoi(table_[r][c].GetValue()) - stoi(table_[topLeftRow-1][topLeftCol+1].GetValue()))+1) / diff;
-                                        if(height<=0){height = 1;}                       
-                                        y = y_axis_height - height;
-                                        out << "<rect class='bar' x='"<< x <<"' width='20' y='"<< y <<"' height='" << height << "'></rect>" << '\n'; 
-                                        x += 25;
+                                    if(!is_number(table_[r][c].GetValue())){
+                                        number = false; 
                                     }
-                                    x+=20;
                                 }
-                                out << "</g>" << '\n';
-                                out << "</svg>" << '\n';
+                                r++;
+                            }
+                            if (number){   
+                                int diff;
+                                bool ascending = true;
+                                unsigned c = topLeftCol+1;
+                                while(c < bottomRightCol && ascending){
+                                    if(c == topLeftCol+1){
+                                        diff = stoi(table_[topLeftRow-1][c+1].GetValue())-stoi(table_[topLeftRow-1][c].GetValue());
+                                        }
+                                    if(stoi(table_[topLeftRow-1][c].GetValue()) >= stoi(table_[topLeftRow-1][c+1].GetValue()) 
+                                    || diff != stoi(table_[topLeftRow-1][c+1].GetValue())-stoi(table_[topLeftRow-1][c].GetValue())){
+                                        ascending = false;
+                                    }
+                                    c++;
+                                } 
+                                if(ascending){
+                                    int x_axis_coord = 20;
+                                    int y_axis_coord;
+                                    int y_axis_height = 25 *bottomRightCol-topLeftCol;
+                                    int y;
+                                    int x = 10;
+                                    int height;
+                                    int counter;
+
+                                    std::ofstream out(parts[1]);
+                                    if (parts[1].substr(parts[1].length()-5) == ".html"){
+                                        out << "<style>"<< '\n';  
+                                        out << ".bar {fill: #bd0202;}"<< '\n';        
+                                        out << ".axis {font: 12px sans-serif;}"<< '\n';;        
+                                        out << ".axis line {fill: none;stroke: #000;shape-rendering: crispEdges;}"<< '\n';     
+                                        out << "</style>"<< '\n';
+                                    }
+                                    out << "<svg height='100%' width='100%' version='1.1' xmlns='http://www.w3.org/2000/svg'>"<< '\n';  
+                                    out << "<g  transform='translate(40,50)'>"<< '\n';  
+                                    out << "<g class=' axis' transform='translate(0,"<< y_axis_height << ")'>" << '\n';
+                                // x axis
+                                    for(unsigned i = topLeftCol+1; i <= bottomRightCol; i++){
+                                        for(unsigned r = topLeftRow; r < bottomRightRow; r++){     
+                                            out << "<g  transform='translate("<< x_axis_coord << ",0)'><line y2='6' x2='0'></line>" << '\n';
+                                            out << "<text dy='1em' y='9' x='0' style='text-anchor: middle;'>" << table_[r][topLeftCol].GetValue() << "</text>" << '\n';            
+                                            out << "</g>" << '\n';
+                                            x_axis_coord += 25;
+                                        }
+                                        x_axis_coord+=20;
+                                        out << "<g  transform='translate("<< x_axis_coord << ",0)'>" << '\n';
+                                        out << "</g>" << '\n';
+                                    }
+                                    out << "</g>" << '\n';
+                                    out << "<g class='y axis'>" << '\n';
+                                    counter=0;
+                                // y axis
+                                    for(unsigned c = topLeftCol+1; c <= bottomRightCol; c++){
+                                        int y_axis_coord = y_axis_height - counter*25;
+                                        counter++;
+                                        out << "<g  transform='translate(0,"<< y_axis_coord << ")'><line x2='-6' y2='0'></line>" << '\n';
+                                        out << "<text dy='.2em' x='-15' y='0' style='text-anchor: end;'>" << table_[topLeftRow-1][c].GetValue() << "</text>" << '\n';            
+                                        out << "</g>" << '\n';
+                                    } 
+                                    out << "<line x1='0' y1='0' x2='0' y2='" << y_axis_height << "' />" << '\n';
+                                    out << "</g>" << '\n';
+                                    for(unsigned c = topLeftCol+1; c <= bottomRightCol; c++){ 
+                                        for(unsigned r = topLeftRow; r < bottomRightRow; r++){
+                                            height = (25 * (stoi(table_[r][c].GetValue()) - stoi(table_[topLeftRow-1][topLeftCol+1].GetValue()))+1) / diff;
+                                            if(height<=0){height = 1;}                       
+                                            y = y_axis_height - height;
+                                            out << "<rect class='bar' x='"<< x <<"' width='20' y='"<< y <<"' height='" << height << "'></rect>" << '\n'; 
+                                            x += 25;
+                                        }
+                                        x+=20;
+                                    }
+                                    out << "</g>" << '\n';
+                                    out << "</svg>" << '\n';
+                                }else{
+                                    SetError("Only works with ascending row of numbers on y-axis!");
+                                }
                             }else{
-                                SetError("Only works with ascending row of numbers on y-axis!");
+                                SetError("Only works with numbers!");
                             }
                         }else{
-                             SetError("Only works with numbers!");
+                            SetError("Wrong range parameters!");
                         }
                     }
                 }else{
