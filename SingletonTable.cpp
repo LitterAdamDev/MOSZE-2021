@@ -7,12 +7,15 @@ SingletonTable::SingletonTable(): table_{{Cell()}},error_{""}, isOn{true}{}
 SingletonTable::SingletonTable(std::string filename): error_{""}, isOn{true}{
    
     std::string line;
-    std::fstream fin;
+    std::ifstream fin;
     fin.open(filename, std::ios::in);
     std::vector<std::string> rows;
     unsigned maxCols = 0;
     while (getline(fin, line))
     {
+        if(!line.empty() && *line.rbegin() != '\r') {
+            line +='\n';
+        }
         unsigned counter = 0;
         for(auto ch : line){
             if(ch == ';'){
@@ -47,12 +50,15 @@ SingletonTable::SingletonTable(std::string filename): error_{""}, isOn{true}{
 
 SingletonTable::SingletonTable(std::string filename,std::string separator): error_{""}, isOn{true}{
     std::string line;
-    std::fstream fin;
+    std::ifstream fin;
     fin.open(filename, std::ios::in);
     std::vector<std::string> rows;
     unsigned maxCols = 0;
     while (getline(fin, line))
     {
+        if(!line.empty() && *line.rbegin() != '\r') {
+            line +='\n';
+        }
         unsigned counter = 0;
         for(auto ch : line){
             if(ch == separator[0]){

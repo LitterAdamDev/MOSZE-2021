@@ -91,7 +91,7 @@ protected:
     SingletonTable(std::string); 
     SingletonTable(std::string,std::string);
     static SingletonTable* SingletonTable_;
-
+    
     std::string value_;
     Table table_;
     std::string error_;
