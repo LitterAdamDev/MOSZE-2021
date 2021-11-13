@@ -1469,11 +1469,6 @@ void Cell::Refresh(const std::vector<std::vector<Cell>>& table,const std::string
     }
 }
 
-/*! \brief BarChart:
- * Generates an SVG diagram representing a grouped bar graph from a specified range. \n
- * The cells in the first column of the range are the labels of the X-axis points, and the first row is the name of the data series. \n
- * Parameters: const string &attrs
- */
 void SingletonTable::BarChart(const std::string &attrs){
     std::vector<std::string> parts;
     SplitString(attrs,parts);
@@ -1493,9 +1488,7 @@ void SingletonTable::BarChart(const std::string &attrs){
                     int topLeftCol;
                     int bottomRightRow;
                     int bottomRightCol;
-                    if(firstCell == secondCell){
-                        SetError("Wrong range parameters!");
-                    }else{
+                    if(std::toupper(firstCell[0]) != std::toupper(secondCell[0]) && firstCell[1] < secondCell[1]){
                         topLeftRow = stoi(firstCell.substr(1,firstCell.length())) < stoi(secondCell.substr(1,secondCell.length()))?
                         stoi(firstCell.substr(1,firstCell.length())) : stoi(secondCell.substr(1,secondCell.length()));
                         bottomRightRow = stoi(firstCell.substr(1,firstCell.length())) > stoi(secondCell.substr(1,secondCell.length()))?
@@ -1596,7 +1589,9 @@ void SingletonTable::BarChart(const std::string &attrs){
                         }else{
                             SetError("Wrong range parameters!");
                         }
-                    }
+                     }else{ 
+                         SetError("Wrong range parameters!");
+                     }
                 }else{
                     SetError("Wrong position attributes!");
                 }
