@@ -1528,7 +1528,7 @@ void SingletonTable::BarChart(const std::string &attrs){
                                     int x_axis_coord = 20;
                                     int y_axis_coord;
                                     int y_axis_height = 25 *bottomRightCol-topLeftCol;
-                                    int viewBox =   bottomRightRow*bottomRightCol*25;
+                                    int viewBox =  (bottomRightRow -(topLeftRow-1)) * (bottomRightCol -(topLeftCol))*25;
                                     int y;
                                     int x = 10;
                                     int height;
