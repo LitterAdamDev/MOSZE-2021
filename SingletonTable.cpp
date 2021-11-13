@@ -1488,7 +1488,7 @@ void SingletonTable::BarChart(const std::string &attrs){
                     int topLeftCol;
                     int bottomRightRow;
                     int bottomRightCol;
-                    if(std::toupper(firstCell[0]) != std::toupper(secondCell[0]) && firstCell[1] < secondCell[1]){
+                    if(std::toupper(firstCell[0]) != std::toupper(secondCell[0])){
                         topLeftRow = stoi(firstCell.substr(1,firstCell.length())) < stoi(secondCell.substr(1,secondCell.length()))?
                         stoi(firstCell.substr(1,firstCell.length())) : stoi(secondCell.substr(1,secondCell.length()));
                         bottomRightRow = stoi(firstCell.substr(1,firstCell.length())) > stoi(secondCell.substr(1,secondCell.length()))?
@@ -1498,12 +1498,13 @@ void SingletonTable::BarChart(const std::string &attrs){
                         bottomRightCol = int(std::toupper(firstCell[0]) - 'A') > int(std::toupper(secondCell[0]) - 'A')?
                         int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
                         
-                        if(table_.size()>=bottomRightRow &&  table_[0].size()>=bottomRightCol ){
+                        if(table_.size()>=bottomRightRow &&  table_[0].size()>=bottomRightCol 
+                        && firstCell[1]<secondCell[1]+secondCell[2] &&  table_[0].size()>=int(std::toupper(secondCell[0]) - 'A')){
                             bool number=true;
                             unsigned r = topLeftRow;
                             while( r < bottomRightRow && number){
                                 for(unsigned c = topLeftCol+1; c <= bottomRightCol; c++){
-                                    if(!is_number(table_[r][c].GetValue())){
+                                    if(!is_number(table_[r][ c].GetValue())){
                                         number = false; 
                                     }
                                 }
@@ -1527,6 +1528,7 @@ void SingletonTable::BarChart(const std::string &attrs){
                                     int x_axis_coord = 20;
                                     int y_axis_coord;
                                     int y_axis_height = 25 *bottomRightCol-topLeftCol;
+                                    int viewBox =   bottomRightRow*bottomRightCol*25;
                                     int y;
                                     int x = 10;
                                     int height;
@@ -1538,11 +1540,14 @@ void SingletonTable::BarChart(const std::string &attrs){
                                         out << ".bar {fill: #bd0202;}"<< '\n';        
                                         out << ".axis {font: 12px sans-serif;}"<< '\n';;        
                                         out << ".axis line {fill: none;stroke: #000;shape-rendering: crispEdges;}"<< '\n';     
+                                        out << "svg{display: inline-block;position: absolute;}"<< '\n';
+                                        out << ".svg-container {position: relative; width: 100%; padding-bottom: 100%; vertical-align: top;}"<< '\n';
                                         out << "</style>"<< '\n';
+                                        out << "<div class='svg-container'>" << '\n';
                                     }
-                                    out << "<svg height='100%' width='100%' version='1.1' xmlns='http://www.w3.org/2000/svg'>"<< '\n';  
+                                    out << "<svg viewBox='0 0 "<< viewBox <<" "<< viewBox <<"' height='100%' width='100%' version='1.1' xmlns='http://www.w3.org/2000/svg'>"<< '\n';  
                                     out << "<g  transform='translate(40,50)'>"<< '\n';  
-                                    out << "<g class=' axis' transform='translate(0,"<< y_axis_height << ")'>" << '\n';
+                                    out << "<g class='axis' transform='translate(0,"<< y_axis_height << ")'>" << '\n';
                                 // x axis
                                     for(unsigned i = topLeftCol+1; i <= bottomRightCol; i++){
                                         for(unsigned r = topLeftRow; r < bottomRightRow; r++){     
@@ -1580,6 +1585,9 @@ void SingletonTable::BarChart(const std::string &attrs){
                                     }
                                     out << "</g>" << '\n';
                                     out << "</svg>" << '\n';
+                                    if (parts[1].substr(parts[1].length()-5) == ".html"){
+                                        out << "</div>" << '\n';
+                                    }
                                 }else{
                                     SetError("Only works with ascending row of numbers on y-axis!");
                                 }
@@ -1587,7 +1595,7 @@ void SingletonTable::BarChart(const std::string &attrs){
                                 SetError("Only works with numbers!");
                             }
                         }else{
-                            SetError("Wrong range parameters!");
+                            SetError("Wrong range of the cells!");
                         }
                      }else{ 
                          SetError("Wrong range parameters!");
