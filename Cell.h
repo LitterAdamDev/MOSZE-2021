@@ -4,6 +4,10 @@
 
 /*! \brief Cell class:
  * for the table cells
+ * Attributes : 
+ * std::string value_ - the value of the cell,  default value: "",
+ * int align_ -  Bitmask type to represent stream format flags,default is  std::ios::left, 
+ * Adjust the text in the field to left or right.
  */
 class Cell{
 private:

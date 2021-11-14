@@ -16,6 +16,9 @@ SingletonTable::SingletonTable(std::string filename): error_{""}, isOn{true}{
     unsigned maxCols = 0;
     while (getline(fin, line))
     {
+        if(!line.empty() && *line.rbegin() != '\r') {
+            line +='\n';
+        }
         unsigned counter = 0;
         for(auto ch : line){
             if(ch == ';'){
@@ -61,6 +64,9 @@ SingletonTable::SingletonTable(std::string filename,std::string separator): erro
     unsigned maxCols = 0;
     while (getline(fin, line))
     {
+        if(!line.empty() && *line.rbegin() != '\r') {
+            line +='\n';
+        }
         unsigned counter = 0;
         for(auto ch : line){
             if(ch == separator[0]){
@@ -521,11 +527,12 @@ void SingletonTable::Align(const std::string &attrs){
                     if(firstCell == secondCell){
                         int col = int(std::toupper(firstCell[0]) - 'A');
                         int row = stoi(firstCell.substr(1,firstCell.length()));
-                        if(parts[1] == "left"){
-                            table_[row-1][col].SetAlign(std::ios::left);
-                        }else{
-                            table_[row-1][col].SetAlign(std::ios::right);
-                        }
+                        if(row-1 < table_.size() && col < table_[0].size())
+                            if(parts[1] == "left"){
+                                table_[row-1][col].SetAlign(std::ios::left);
+                            }else{
+                                table_[row-1][col].SetAlign(std::ios::right);
+                            }
                     }else{
                         topLeftRow = stoi(firstCell.substr(1,firstCell.length())) < stoi(secondCell.substr(1,secondCell.length()))?
                         stoi(firstCell.substr(1,firstCell.length())) : stoi(secondCell.substr(1,secondCell.length()));
@@ -537,11 +544,12 @@ void SingletonTable::Align(const std::string &attrs){
                         int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
                         for(unsigned r = topLeftRow; r <= bottomRightRow; r++){
                             for(unsigned c = topLeftCol; c <= bottomRightCol; c++){
-                                if(parts[1] == "left"){
-                                    table_[r-1][c].SetAlign(std::ios::left);
-                                }else{
-                                    table_[r-1][c].SetAlign(std::ios::right);
-                                }
+                                if(r-1 < table_.size() && c < table_[0].size())
+                                    if(parts[1] == "left"){
+                                        table_[r-1][c].SetAlign(std::ios::left);
+                                    }else{
+                                        table_[r-1][c].SetAlign(std::ios::right);
+                                    }
                             }
                         }
                     }
@@ -811,7 +819,7 @@ void SingletonTable::Swap(const std::string &attrs){
             for (unsigned int adrs_i=0; adrs_i<parts.size(); adrs_i++){
                 col_chr=(char) std::toupper(parts[adrs_i][0]);
                 adrs_arr[adrs_i].col=(unsigned) (col_chr - 'A') +1 ;
-                if (adrs_arr[adrs_i].col >table_[adrs_arr[adrs_i].col].size()){
+                if (adrs_arr[adrs_i].col >table_[0].size()){
                     errorCode=4;
                     break;
                 }
@@ -861,8 +869,6 @@ void SingletonTable::Sort(const std::string &attrs){
     SortType stype;
     SortBy sby;
     unsigned col_row_num;
-    Cell tmp(table_);
-    std::vector<Cell> col_vec;
     // Check argument count
     if(parts.size() < 2){
         errorCode = 1;  
@@ -918,7 +924,6 @@ void SingletonTable::Sort(const std::string &attrs){
                 errorCode=6;
             }
         }
-    } 
     switch (errorCode){
         case 1:
             SetError("Missing attributes!");
@@ -943,37 +948,35 @@ void SingletonTable::Sort(const std::string &attrs){
                 for (unsigned i=0; i<table_[col_row_num-1].size();i++){
                     for (unsigned index=0; index<=table_[col_row_num-1].size()-2; index++){
                         if (compare_func(table_[col_row_num-1][index], table_[col_row_num-1][index+1],stype)){
-                            tmp=table_[col_row_num-1][index];
-                            table_[col_row_num-1][index]=table_[col_row_num-1][index+1];
-                            table_[col_row_num-1][index+1]=tmp;
+                            for (unsigned rowToSwapIn=0; rowToSwapIn<=table_.size()-1; rowToSwapIn++){
+                                auto tmp=table_[rowToSwapIn][index];
+                                table_[rowToSwapIn][index]=table_[rowToSwapIn][index+1];
+                                table_[rowToSwapIn][index+1]=tmp;
+                            }
                         }
                     }
                 }
             }
             else{
-                for (auto& row_vec : table_){
-                    col_vec.push_back(row_vec[col_row_num-1]);
-                }
-                for (unsigned i=0; i<col_vec.size();i++){
-                    for (unsigned index=0; index<=col_vec.size()-2; index++){
-                        if (compare_func(col_vec[index], col_vec[index+1],stype)){
-                            tmp=col_vec[index];
-                            col_vec[index]=col_vec[index+1];
-                            col_vec[index+1]=tmp;
+                for (unsigned i=0; i<table_.size();i++){
+                    for (unsigned index=0; index<=table_.size()-2; index++){
+                        if (compare_func(table_[index][col_row_num-1], table_[index+1][col_row_num-1],stype)){
+                            for (unsigned colToSwapIn=0; colToSwapIn<=table_[col_row_num-1].size()-1; colToSwapIn++){
+                                auto tmp=table_[index][colToSwapIn];
+                                table_[index][colToSwapIn]=table_[index+1][colToSwapIn];
+                                table_[index+1][colToSwapIn]=tmp;
+                            }
                         }
                     }
                 }
-                for (unsigned i=0; i<col_vec.size();i++){
-                    // kell assignment operator a cell classban
-                    table_[i][col_row_num-1]=col_vec[i];
-                }
             }
-            RefreshTable();
             break;
         default:
             break;
-    }
+        }
+    } 
 }
+
 
 /*!  
  *  operator overloading < \n
