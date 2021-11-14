@@ -1500,31 +1500,31 @@ void SingletonTable::BarChart(const std::string &attrs){
                         
                         if(table_.size()>=bottomRightRow &&  table_[0].size()>=bottomRightCol 
                         && firstCell[1]<secondCell[1]+secondCell[2] &&  table_[0].size()>=int(std::toupper(secondCell[0]) - 'A')){
-                            bool number=true;
+                            bool wrong_input=true;
                             unsigned r = topLeftRow;
-                            while( r < bottomRightRow && number){
+                            while( r < bottomRightRow && wrong_input){
                                 for(unsigned c = topLeftCol+1; c <= bottomRightCol; c++){
                                     if(!is_number(table_[r][ c].GetValue())){
-                                        number = false; 
+                                       wrong_input = false; 
                                     }
                                 }
                                 r++;
                             }
-                            if (number){   
+                            if (wrong_input){   
                                 int diff;
-                                bool ascending = true;
+                                bool wrong_input = true;
                                 unsigned c = topLeftCol+1;
-                                while(c < bottomRightCol && ascending){
+                                while(c < bottomRightCol && wrong_input){
                                     if(c == topLeftCol+1){
                                         diff = stoi(table_[topLeftRow-1][c+1].GetValue())-stoi(table_[topLeftRow-1][c].GetValue());
                                         }
                                     if(stoi(table_[topLeftRow-1][c].GetValue()) >= stoi(table_[topLeftRow-1][c+1].GetValue()) 
                                     || diff != stoi(table_[topLeftRow-1][c+1].GetValue())-stoi(table_[topLeftRow-1][c].GetValue())){
-                                        ascending = false;
+                                        wrong_input = false;
                                     }
                                     c++;
                                 } 
-                                if(ascending){
+                                if(wrong_input){
                                     int x_axis_coord = 20;
                                     int y_axis_coord;
                                     int y_axis_height = 25 *bottomRightCol-topLeftCol;
