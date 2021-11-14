@@ -1497,34 +1497,34 @@ void SingletonTable::BarChart(const std::string &attrs){
                         int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
                         bottomRightCol = int(std::toupper(firstCell[0]) - 'A') > int(std::toupper(secondCell[0]) - 'A')?
                         int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
-                        
+
+                        bool wrongInput=true;
                         if(table_.size()>=bottomRightRow &&  table_[0].size()>=bottomRightCol 
                         && firstCell[1]<secondCell[1]+secondCell[2] &&  table_[0].size()>=int(std::toupper(secondCell[0]) - 'A')){
-                            bool wrong_input=true;
+                            
                             unsigned r = topLeftRow;
-                            while( r < bottomRightRow && wrong_input){
+                            while( r < bottomRightRow && wrongInput){
                                 for(unsigned c = topLeftCol+1; c <= bottomRightCol; c++){
                                     if(!is_number(table_[r][ c].GetValue())){
-                                       wrong_input = false; 
+                                       wrongInput = false; 
                                     }
                                 }
                                 r++;
                             }
-                            if (wrong_input){   
+                            if (wrongInput){   
                                 int diff;
-                                bool wrong_input = true;
                                 unsigned c = topLeftCol+1;
-                                while(c < bottomRightCol && wrong_input){
+                                while(c < bottomRightCol && wrongInput){
                                     if(c == topLeftCol+1){
                                         diff = stoi(table_[topLeftRow-1][c+1].GetValue())-stoi(table_[topLeftRow-1][c].GetValue());
                                         }
                                     if(stoi(table_[topLeftRow-1][c].GetValue()) >= stoi(table_[topLeftRow-1][c+1].GetValue()) 
                                     || diff != stoi(table_[topLeftRow-1][c+1].GetValue())-stoi(table_[topLeftRow-1][c].GetValue())){
-                                        wrong_input = false;
+                                        wrongInput = false;
                                     }
                                     c++;
                                 } 
-                                if(wrong_input){
+                                if(wrongInput){
                                     int x_axis_coord = 20;
                                     int y_axis_coord;
                                     int y_axis_height = 25 *bottomRightCol-topLeftCol;
