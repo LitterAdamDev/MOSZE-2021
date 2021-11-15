@@ -1,9 +1,5 @@
 #include "Cell.h"
 
-/*! \brief CalculateFormula: \n
- * Calculates the aggregator functions: SUM, AVG, MIN, MAX \n
- * Parameters: const std::vector<std::vector<Cell>>& table, const std::string& formula \n
- */
 bool is_number(const std::string& s){
     std::string::const_iterator it = s.begin();
     while (it != s.end() && (std::isdigit(*it) || *it == '.')) ++it;
@@ -270,10 +266,7 @@ void Cell::CalculateFormula(const std::vector<std::vector<Cell>>& table,const st
     }
 }
 
-/*! \brief Refresh:
- * Static method of the cell that reruns all formulas in the table \n
- * Parameters: const std::vector<std::vector<Cell>>& table, const std::string& valCheck \n
- */
+
 void Cell::Refresh(const std::vector<std::vector<Cell>>& table,const std::string& valCheck){
     for(unsigned mr = 0; mr < table.size(); mr++){
         for(unsigned mc = 0; mc < table[0].size(); mc++){
