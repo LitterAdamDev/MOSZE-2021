@@ -3,14 +3,15 @@
 #include <float.h>
 
 /*! \brief Cell class:for the table cells.
- * Attributes :  
+ * Attributes (private):  
  * enum FormulaType - enumerators: SUM, AVG, MIN, MAX.
  * int align_ -  Bitmask type to represent stream format flags,default is  std::ios::left, 
  * Adjust the text in the field to left or right.
  * std::string value_ - the value of the cell,  default value: "",.
- * bools for the value is a formula or , and it's evaluated.
- * unsigned ints TLR, TLC, BRR, BRC.
- * declaration of FormulaType.
+ * bools for the value is a formula.
+ * unsigned ints TLR, TLC, BRR, BRC are the coordinates of the table.
+ * evaluated - bool for the given aggregator function is evaluated.
+ * type_ - declaration of FormulaType.
  * string formula_ - value of the formula,  default value: "",.
  */
 class Cell{
