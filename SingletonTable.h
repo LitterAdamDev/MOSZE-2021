@@ -146,9 +146,10 @@ public:
     *  Checks which command is used and execute it.
     *  \param const string &command
     */   
-    void ExecuteCommand(const std::string&);       
+    void ExecuteCommand(const std::string&);    
 
-    void PrintTable();   /*! \brief PrintTable: Prints the table */    
+    /*! \brief PrintTable: Prints the table */  
+    void PrintTable();     
 
     /*! \brief PrintError:Print the error messages 
     *  \return tmp
