@@ -986,8 +986,8 @@ void SingletonTable::BarChart(const std::string &attrs){
 
                         bool wrongInput=true;
                         if(table_.size()>=bottomRightRow &&  table_[0].size()>=bottomRightCol 
-                        && firstCell[1]<secondCell[1]+secondCell[2] &&  table_[0].size()>=int(std::toupper(secondCell[0]) - 'A')){
-                            
+                        && firstCell[1]<secondCell[1]+secondCell[2] &&  table_[0].size()>=int(std::toupper(secondCell[0]) - 'A' + 1)){
+                           std:: cout<<table_[0].size() << std::toupper(secondCell[0]) - 'A'<<std::endl;
                             unsigned r = topLeftRow;
                             while( r < bottomRightRow && wrongInput){
                                 for(unsigned c = topLeftCol+1; c <= bottomRightCol; c++){
