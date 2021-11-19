@@ -987,11 +987,10 @@ void SingletonTable::BarChart(const std::string &attrs){
                         bool wrongInput=true;
                         if(table_.size()>=bottomRightRow &&  table_[0].size()>=bottomRightCol 
                         && firstCell[1]<secondCell[1]+secondCell[2] &&  table_[0].size()>=int(std::toupper(secondCell[0]) - 'A' + 1)){
-                           std:: cout<<table_[0].size() << std::toupper(secondCell[0]) - 'A'<<std::endl;
-                            unsigned r = topLeftRow;
+                            unsigned r = topLeftRow-1;
                             while( r < bottomRightRow && wrongInput){
                                 for(unsigned c = topLeftCol+1; c <= bottomRightCol; c++){
-                                    if(!is_number(table_[r][ c].GetValue())){
+                                    if(!is_number(table_[r][c].GetValue())){ 
                                        wrongInput = false; 
                                     }
                                 }
