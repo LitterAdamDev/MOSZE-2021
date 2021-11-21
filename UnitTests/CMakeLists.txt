@@ -18,4 +18,4 @@ include_directories(${GTEST_INCLUDE_DIRS})
 # Link runTests with what we want to test 
 # and the GTest and pthread library
 add_executable(runGTest unittest_4.cpp ../SingletonTable.cpp ../Cell.cpp)
-target_link_libraries(runTests ${GTEST_LIBRARIES} pthread)
+target_link_libraries(runGTest ${GTEST_LIBRARIES} pthread)
