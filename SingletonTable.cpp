@@ -663,7 +663,7 @@ void SingletonTable::ExecuteCommand(const std::string& command){
 
 SingletonTable *SingletonTable::SingletonTable_= nullptr; /*!< Set the SingletonTable to nullptr */
 
-SingletonTable *SingletonTable::GetInstance(int counter, char** arguments)
+SingletonTable *SingletonTable::GetInstance(int counter,  char** arguments)
 {
     if(SingletonTable_==nullptr){
         if(counter == 2){
@@ -946,6 +946,13 @@ std::string& SingletonTable::string_toupper(std::string&& myst){
         }
     }
     return myst;
+}
+std::string SingletonTable::GetCellValue(unsigned row, unsigned column){
+    if ((row > table_.size()-1) || (column > table_[0].size())){
+        std::cerr<<"Cell out of range!\n";
+        return "";
+    }
+    return table_[row][column].GetPrint();
 }
 
 bool SingletonTable::compare_func(const Cell& a,const Cell& b, const SortType& stype){
