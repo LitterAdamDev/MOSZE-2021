@@ -8,5 +8,7 @@ RUN apt-get update && apt-get install  -y \
   texlive-latex-extra \
   graphviz \
   build-essential \
+  libgtest-dev \
+  cmake \
 && rm -rf /var/lib/apt/lists/*
 
