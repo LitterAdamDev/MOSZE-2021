@@ -2,8 +2,17 @@
 #include <iostream>
 #include <float.h>
 
-/*! \brief Cell class:
- * for the table cells
+/*! \brief Cell class:for the table cells.
+ * Attributes (private):  
+ * \param FormulaType - enumerators: SUM, AVG, MIN, MAX.
+ * \param int align_ -  Bitmask type to represent stream format flags,default is  std::ios::left, 
+ * Adjust the text in the field to left or right.
+ * \param string value_ - the value of the cell,  default value: "",.
+ * \param bools for the value is a formula.
+ * \param unsigned(int) TLR, TLC, BRR, BRC are the coordinates of the table.
+ * \param bool evaluated - bool for the given aggregator function is evaluated.
+ * \param FormulaType type_ - declaration of FormulaType.
+ * \param string formula_ - value of the formula,  default value: "",.
  */
 class Cell{
 private:
@@ -24,14 +33,39 @@ private:
     bool evaluated;
     FormulaType type_;
     std::string formula_ = "";
+
+    /*! \brief CalculateFormula:
+     * Calculates the aggregator functions: SUM, AVG, MIN, MAX. 
+     * \param vector<std::vector<Cell>>& table
+     * \param string& formula
+     */
     void CalculateFormula(const std::vector<std::vector<Cell>>&, const std::string&);
+
 public:
-    Cell(const std::vector<std::vector<Cell>>&){}        /*! constructor of Cell class */
+    /*! \brief Constructor of Cell class:
+     *  Contains data of the cell .
+     *  Initialize: align with align - default is left, value with value.
+     *  Runs the CalculateFormula function with table vector and with value of the formula string.
+     *  \param table  The table vector.
+     *  \param value  The content of the cell.
+     *  \param align  Tthe align of the cell.
+     */
+    Cell(const std::vector<std::vector<Cell>>&){}
     Cell(const std::vector<std::vector<Cell>>& table, std::string value, int align = std::ios::left):align_{align}{
         CalculateFormula(table,value);
     }   
+
+    /*! \brief Refresh:
+     * Static method of the cell that reruns all formulas in the table.
+     * \param vector<std::vector<Cell>>& table 
+     * \param string& valCheck
+     */
     static void Refresh(const std::vector<std::vector<Cell>>& table,const std::string&);
-    /*!  = operator overloading */
+
+    /*!  
+     *  operator overloading =
+     *  \param  Cell other
+     */
     Cell& operator=(Cell other){
         align_=other.align_;
         value_=other.value_;
@@ -68,6 +102,18 @@ public:
     void SetValue(const std::vector<std::vector<Cell>>& table, std::string value){  /*! set the value of the cell with CalculateFormula */
         CalculateFormula(table,value);
     }
+
+    /*!  
+     *  operator overloading < 
+     *  \param  Cell& a
+     *  \param  Cell& b
+     */
     friend bool operator<(const Cell& a,const Cell& b);
+
+    /*!  
+     *  operator overloading >
+     *  \param  Cell& a
+     *  \param  Cell& b
+     */
     friend bool operator>(const Cell& a,const Cell& b);
 };
