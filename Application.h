@@ -7,7 +7,7 @@ class Application {
             tables.clear();
             AddTable(table);
         };
-        Application(const Application&) = delete;
+        Application(Application&) = delete;
         void operator=(const Application&) = delete;
         virtual ~Application();
         
@@ -25,6 +25,7 @@ class Application {
         void Delete(const std::string&);     
         void Close(const std::string&);
         void Rename(const std::string&);
+        void Print();
 
         void setIsOn(bool ison) {isOn=ison;}
         std::vector<SingletonTable&> tables;
