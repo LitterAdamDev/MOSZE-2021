@@ -18,16 +18,6 @@ typedef std::vector<std::vector<Cell>> Table; /*! definition of Table vector */
 class SingletonTable
 {
 protected:
-/*! \brief Constructor of SingletonTable class
- *  Reads the data from a file 
- *  \param string filename 
- *  \param string separator
- *  Initialize: error with "", isOn with true
- */
-    SingletonTable();  
-    SingletonTable(std::string); 
-    SingletonTable(std::string,std::string);
-    static SingletonTable* SingletonTable_;
     std::string value_;
     Table table_;
     std::string error_;
@@ -140,6 +130,15 @@ protected:
     std::string& string_toupper(std::string&& myst);
 
 public:
+    /*! \brief Constructor of SingletonTable class
+    *  Reads the data from a file 
+    *  \param string filename 
+    *  \param string separator
+    *  Initialize: error with "", isOn with true
+    */
+    SingletonTable();  
+    SingletonTable(std::string); 
+    SingletonTable(std::string,std::string);
     SingletonTable(SingletonTable&) = delete;                           
     void operator=(const SingletonTable&) = delete;
 
