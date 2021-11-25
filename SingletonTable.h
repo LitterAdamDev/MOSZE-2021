@@ -22,6 +22,7 @@ protected:
     Table table_;
     std::string error_;
     bool isOn;
+    std::string name_;
 
     /*! \brief Edit:
     * Enter the specified string into the cell with XY coordinates
@@ -169,6 +170,11 @@ public:
     *  checks a string is convertable to a number.
     *  \param string& s
     */
+
+    std::string GetName(){return name_;}
+   
+    void SetName(std::string newName){name_=newName;}
+
     static bool is_number(const std::string& );    
 
     std::string GetCellValue(unsigned row, unsigned column);

@@ -1,8 +1,8 @@
 #include "SingletonTable.h"
 
-SingletonTable::SingletonTable(): table_{{Cell(table_)}},error_{""}, isOn{true}{}
+SingletonTable::SingletonTable(): table_{{Cell(table_)}},error_{""}, isOn{true}, name_{"Table"}{}
 
-SingletonTable::SingletonTable(std::string filename): error_{""}, isOn{true}{
+SingletonTable::SingletonTable(std::string filename): error_{""}, isOn{true}, name_{filename}{
    
     std::string line;
     std::fstream fin;
@@ -46,7 +46,7 @@ SingletonTable::SingletonTable(std::string filename): error_{""}, isOn{true}{
     fin.close();
 }
 
-SingletonTable::SingletonTable(std::string filename,std::string separator): error_{""}, isOn{true}{
+SingletonTable::SingletonTable(std::string filename,std::string separator): error_{""}, isOn{true}, name_{filename}{
     std::string line;
     std::fstream fin;
     fin.open(filename, std::ios::in);
