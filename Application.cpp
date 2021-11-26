@@ -15,7 +15,7 @@ void Application::ExecuteCommand(const std::string& command){
     }else if(commandType == "switch"){
         Switch(param);
     }else if(commandType == "open"){
-        Delete(param);     
+        Open(param);     
     }else if(commandType == "close"){
         Close(param);
     }else if(commandType == "rename"){
@@ -139,7 +139,41 @@ void Application::Switch(const std::string& attrs){
         break;
     }
 }
-void Application::Delete(const std::string&){}
+void Application::Open(const std::string& attrs){
+    //open filename [-sep ,]
+    std::vector<std::string> parts;
+    SingletonTable::SplitString(attrs,parts);
+    std::string separator = ";";
+    int errorCode = 0;
+    SingletonTable* tmpTable;
+    if(parts.size() == 1 || parts.size() == 3){
+        if(parts[0].length() >4 && parts[0].substr(parts[0].length()-4) == ".csv"){
+            if(parts.size() == 3){
+                if(parts[1] == "-sep" && parts[2].length() == 1){
+                    separator = parts[2];
+                }else{
+                    errorCode = -1;
+                }
+            }
+        }else{
+            errorCode = -1;
+        }
+    }else{
+        errorCode = -1;
+    }
+    if(errorCode == 0){
+        tmpTable=new SingletonTable(parts[0], separator);
+        if (tmpTable==nullptr){
+            setError("Error while constructing Table!");
+            return;
+        }
+        tables.push_back(tmpTable);
+        activeSheetIndex=tables.size()-1;
+    }else{
+        setError("Error while opening!");
+    }
+}
+
 void Application::Close(const std::string&){}
 void Application::Rename(const std::string&){}
 void Application::Exit(){

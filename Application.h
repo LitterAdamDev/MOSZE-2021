@@ -27,7 +27,7 @@ class Application {
     private:
         void New(const std::string&);
         void Switch(const std::string&);
-        void Delete(const std::string&);
+        void Open(const std::string&);
         void Close(const std::string&);
         void Rename(const std::string&);
         void Exit();
