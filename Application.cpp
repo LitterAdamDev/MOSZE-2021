@@ -70,14 +70,9 @@ void Application::New(const std::string& attrs){
         errorCode = 1;
     }else if(parts.size() > 2){
         errorCode = 2;
-    }else if((SingletonTable::string_toupper(parts[0])) != "SHEET"){
-        errorCode = 3;
     }else{
-        for (auto it : tables){
-            if (it->GetName()==parts[2]){
-                errorCode=4;
-                break;
-            }
+        if((SingletonTable::string_toupper(parts[0])) != "SHEET"){
+            errorCode = 3;
         }
     }
     switch (errorCode){
@@ -89,9 +84,6 @@ void Application::New(const std::string& attrs){
         break;
     case 3:
         setError("Second attribute of new command must be: \"sheet\" !");
-        break;
-    case 4:
-        setError("This sheet name is already taken!");
         break;
     case 0:
         tmpTable=new SingletonTable();
