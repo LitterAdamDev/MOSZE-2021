@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 {
     SingletonTable* initTable_ = InitTable ( argc, argv ) ;
     if (initTable_==nullptr){
-        std::cerr<<"Error initializing table!\n";
+        std::cerr<<"Error while initializing table!\n";
         return -1;
     }
     Application* myApp=new Application(initTable_, true);

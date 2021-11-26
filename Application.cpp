@@ -22,21 +22,22 @@ void Application::ExecuteCommand(const std::string& command){
         Rename(param);   
     }
     else if(commandType == "exit"){
-        setIsOn(false);   
+        Exit();   
     }
     else{
         tables[activeSheetIndex]->ExecuteCommand(command);
+        if (error_=="") setError(tables[activeSheetIndex]->PrintError());
     }
 }
 
 void Application::Print(){
     if (activeSheetIndex==-1){
-        std::cerr<<"Active table missing!";
+        setError("Active table missing!\n");
         setIsOn(false);
         return;
     }
     tables[activeSheetIndex]->PrintTable();
-    std::cout<<"\n\n";
+    std::cout<<"\n";
     for (unsigned i=0; i<tables.size(); i++){
         std::cout<< i << ((i==activeSheetIndex) ? "*" : "" ) << ": " << tables[i]->GetName() << " "; 
     }
@@ -46,9 +47,11 @@ void Application::Print(){
 std::string Application::PrintError(){
     if (activeSheetIndex==-1){
         setIsOn(false);
-        return "Active table missing!";
+        return "Active table missing!\n";
     }
-    return tables[activeSheetIndex]->PrintError();
+    std::string tmp_st=getError();
+    setError("");
+    return tmp_st;
 }
 
 Application::~Application(){
@@ -62,3 +65,7 @@ void Application::Switch(const std::string&){}
 void Application::Delete(const std::string&){}
 void Application::Close(const std::string&){}
 void Application::Rename(const std::string&){}
+void Application::Exit(){
+    setIsOn(false);
+    std::cout << "Folyamat megszakítva..." << std::endl;
+}
