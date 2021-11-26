@@ -22,3 +22,19 @@ jobs:
         with:
           name: generated_output
           path: generated_output.txt
+
+  doxygen:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: sudo apt install doxygen graphviz texlive-latex-extra
+    - run: doxygen doxyconf 
+    - name: make pdf from latex
+      working-directory:  docs/latex/
+      run: make
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: doxygen
+        path: docs/
+ 

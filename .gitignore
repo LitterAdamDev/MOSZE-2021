@@ -5,6 +5,10 @@
 main
 *csv
 generated_output.txt
+/docs
+.log
 
+!example.csv
+*.out
 # Local History for Visual Studio Code
 .history/
