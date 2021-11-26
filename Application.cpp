@@ -220,7 +220,46 @@ void Application::Close(const std::string& attrs){
     }
 }
 
-void Application::Rename(const std::string&){}
+void Application::Rename(const std::string& attrs){
+    //rename N newname
+    int errorCode = 0;
+    std::vector<std::string> parts;
+    SingletonTable::SplitString(attrs,parts);
+    int indexToRename;
+    if(parts.size() < 2){
+        errorCode = 1;
+    }else if(parts.size() > 2){
+        errorCode = 2;
+    }else{
+        if(!SingletonTable::is_number(parts[0])){
+            errorCode = 3;
+        }
+    }
+    if (errorCode==0){
+        indexToRename=std::stoi(parts[0]);
+        if ( ( indexToRename < 0 ) || ( indexToRename > tables.size() -1 ) ){
+            errorCode = 4;
+        }
+    }
+    switch (errorCode){
+    case 1:
+        setError("Missing attributes!");
+        break;
+    case 2:
+        setError("Too much attributes!");
+        break;
+    case 3:
+        setError("First attribute of rename command must be a positive integer!");
+        break;
+    case 4:
+        setError("Table with that index does not exist!");
+        break;
+    case 0:
+        tables[indexToRename]->SetName(parts[1]);
+    default:
+        break;
+    }
+}
 void Application::Exit(){
     setIsOn(false);
     std::cout << "Folyamat megszakítva..." << std::endl;
