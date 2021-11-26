@@ -66,12 +66,6 @@ protected:
     */                                   
     void SetError(const std::string&);      
 
-    /*! \brief SplitString: Split the strings 
-    *  \param string& s
-    *  \param vector<std::string>& v
-    */                              
-    void SplitString(const std::string&, std::vector<std::string>&);    
-
     /*! sets the isOn with a value
     *  \param bool value
     */   
@@ -122,13 +116,7 @@ protected:
         sortByRow=0
     };        
 
-    /*! \brief toupper:
-    *  converts a given character to uppercase. 
-    *  Only English alphabet a - z.
-    *  \param string& myst
-    */                                                             
-    std::string& string_toupper(std::string& myst);                     
-    std::string& string_toupper(std::string&& myst);
+
 
 public:
     /*! \brief Constructor of SingletonTable class
@@ -143,18 +131,25 @@ public:
     SingletonTable(SingletonTable&) = delete;                           
     void operator=(const SingletonTable&) = delete;
 
-    /*! \brief GetInstance:
-    *  initializes the SingletonTable class object 
-    *  \param int counter 
-    *  \param char** arguments
-    */
-    static SingletonTable *GetInstance(int,char**);  
-
     /*! \brief Execute the commands:
     *  Checks which command is used and execute it.
     *  \param const string &command
     */   
-    void ExecuteCommand(const std::string&);    
+    void ExecuteCommand(const std::string&);  
+    
+    /*! \brief SplitString: Split the strings 
+    *  \param string& s
+    *  \param vector<std::string>& v
+    */                              
+    static void SplitString(const std::string&, std::vector<std::string>&);
+
+    /*! \brief toupper:
+    *  converts a given character to uppercase. 
+    *  Only English alphabet a - z.
+    *  \param string& myst
+    */                                                             
+    static std::string& string_toupper(std::string& myst);                     
+    static std::string& string_toupper(std::string&& myst);  
 
     /*! \brief PrintTable: Prints the table */  
     void PrintTable();     
@@ -164,16 +159,17 @@ public:
     */                                                    
     std::string PrintError();   
 
-    bool GetIsOn() const;     /*! \return the value of isOn  */      
+    bool GetIsOn() const;     /*! \return the value of isOn  */     
+    
+     
+    std::string GetName(){return name_;}
+   
+    void SetName(std::string newName){name_=newName;}
 
     /*! \brief is_number:
     *  checks a string is convertable to a number.
     *  \param string& s
     */
-
-    std::string GetName(){return name_;}
-   
-    void SetName(std::string newName){name_=newName;}
 
     static bool is_number(const std::string& );    
 
