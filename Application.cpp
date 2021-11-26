@@ -83,7 +83,7 @@ void Application::New(const std::string& attrs){
         setError("Too much attributes!");
         break;
     case 3:
-        setError("Second attribute of new command must be: \"sheet\" !");
+        setError("First attribute of new command must be: \"sheet\" !");
         break;
     case 0:
         tmpTable=new SingletonTable();
@@ -99,7 +99,46 @@ void Application::New(const std::string& attrs){
         break;
     }
 }
-void Application::Switch(const std::string&){}
+void Application::Switch(const std::string& attrs){
+    //switch N
+    int errorCode = 0;
+    std::vector<std::string> parts;
+    SingletonTable::SplitString(attrs,parts);
+    int newIndex;
+    if(parts.size() < 1){
+        errorCode = 1;
+    }else if(parts.size() > 1){
+        errorCode = 2;
+    }else{
+        if(!SingletonTable::is_number(parts[0])){
+            errorCode = 3;
+        }
+    }
+    if (errorCode==0){
+        newIndex=std::stoi(parts[0]);
+        if ( ( newIndex < 0 ) || ( newIndex > tables.size() -1 ) ){
+            errorCode = 4;
+        }
+    }
+    switch (errorCode){
+    case 1:
+        setError("Missing attributes!");
+        break;
+    case 2:
+        setError("Too much attributes!");
+        break;
+    case 3:
+        setError("First attribute of switch command must be a positive integer!");
+        break;
+    case 4:
+        setError("Table with that index does not exist!");
+        break;
+    case 0:
+        activeSheetIndex=newIndex;
+    default:
+        break;
+    }
+}
 void Application::Delete(const std::string&){}
 void Application::Close(const std::string&){}
 void Application::Rename(const std::string&){}
