@@ -174,7 +174,52 @@ void Application::Open(const std::string& attrs){
     }
 }
 
-void Application::Close(const std::string&){}
+void Application::Close(const std::string& attrs){
+    //close N
+    int errorCode = 0;
+    std::vector<std::string> parts;
+    SingletonTable::SplitString(attrs,parts);
+    int indexToClose;
+    if(parts.size() < 1){
+        errorCode = 1;
+    }else if(parts.size() > 1){
+        errorCode = 2;
+    }else{
+        if(!SingletonTable::is_number(parts[0])){
+            errorCode = 3;
+        }
+    }
+    if (errorCode==0){
+        indexToClose=std::stoi(parts[0]);
+        if ( ( indexToClose < 0 ) || ( indexToClose > tables.size() -1 ) ){
+            errorCode = 4;
+        }
+    }
+    switch (errorCode){
+    case 1:
+        setError("Missing attributes!");
+        break;
+    case 2:
+        setError("Too much attributes!");
+        break;
+    case 3:
+        setError("First attribute of close command must be a positive integer!");
+        break;
+    case 4:
+        setError("Table with that index does not exist!");
+        break;
+    case 0:
+        if (activeSheetIndex==tables.size()-1) activeSheetIndex--;
+        delete tables[indexToClose];
+        tables.erase( tables.begin() + indexToClose );
+        if(tables.size()==0){
+            Exit();
+        }
+    default:
+        break;
+    }
+}
+
 void Application::Rename(const std::string&){}
 void Application::Exit(){
     setIsOn(false);
