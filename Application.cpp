@@ -21,24 +21,44 @@ void Application::ExecuteCommand(const std::string& command){
     }else if(commandType == "rename"){
         Rename(param);   
     }
+    else if(commandType == "exit"){
+        setIsOn(false);   
+    }
     else{
-        if (activeSheetIndex==-1){
-            std::cerr<<"Active table missing!";
-            return;
-        }
-        tables[activeSheetIndex].ExecuteCommand(command);
+        tables[activeSheetIndex]->ExecuteCommand(command);
     }
 }
 
 void Application::Print(){
     if (activeSheetIndex==-1){
         std::cerr<<"Active table missing!";
+        setIsOn(false);
         return;
     }
-    tables[activeSheetIndex].PrintTable();
+    tables[activeSheetIndex]->PrintTable();
     std::cout<<"\n\n";
     for (unsigned i=0; i<tables.size(); i++){
-        std::cout<< i << ((i==activeSheetIndex) ? "*" : "" ) << ": " << tables[i].GetName() << " "; 
+        std::cout<< i << ((i==activeSheetIndex) ? "*" : "" ) << ": " << tables[i]->GetName() << " "; 
     }
     std::cout<<std::endl;
 }
+
+std::string Application::PrintError(){
+    if (activeSheetIndex==-1){
+        setIsOn(false);
+        return "Active table missing!";
+    }
+    return tables[activeSheetIndex]->PrintError();
+}
+
+Application::~Application(){
+    for (auto it : tables){
+        delete it;
+    }
+}
+
+void Application::New(const std::string&){}
+void Application::Switch(const std::string&){}
+void Application::Delete(const std::string&){}
+void Application::Close(const std::string&){}
+void Application::Rename(const std::string&){}
