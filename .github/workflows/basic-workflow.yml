@@ -58,7 +58,5 @@ jobs:
     - uses: actions/checkout@v2
     - name: Make main
       run: make
-    - name: install valgrind
-      run: sudo apt install valgrind
     - name: Run memcheck
       run: valgrind ./main
