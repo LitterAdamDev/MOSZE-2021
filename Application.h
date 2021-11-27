@@ -3,7 +3,7 @@
 class Application {
     public:
         //there must be an initializing table object, or make execute command static
-        Application(SingletonTable* table, bool ison) : isOn{ison}, activeSheetIndex{-1}, error_{""} {
+        Application(SingletonTable* table, bool ison) : activeSheetIndex{-1}, isOn{ison},  error_{""} {
             tables.clear();
             AddTable(table);
         };
