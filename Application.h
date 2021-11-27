@@ -6,7 +6,6 @@
  * \param bool isOn 
  * \param string error_ - to print the errors
  */
-
 class Application {
     public:
         //there must be an initializing table object, or make execute command static
