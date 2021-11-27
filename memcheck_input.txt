@@ -1,0 +1,6 @@
+new sheet asd123
+open example.csv -sep ;
+switch 2
+new sheet asd
+close 2
+exit
