@@ -37,7 +37,7 @@ class Application {
          */     
         bool getIsOn() const {return isOn;}
 
-        /*! sets the isOn with a value
+        /*! Sets the isOn with a value
          *  \param bool ison
          */  
         void setIsOn(bool ison){isOn=ison;}
@@ -50,17 +50,17 @@ class Application {
          */ 
         std::string getError() const {return error_;}
 
-        /*! sets the error message with the err parameter
+        /*! Sets the error message with the err parameter
          *  \param string err
          */  
         void setError(std::string err) {error_=err;}
 
-        /*! print the table names
+        /*! Print the table names
          */ 
         void Print();
 
         /*! \brief PrintError:Print the error messages 
-         *  \return tmp
+         *  \return tmp_st
          */    
         std::string PrintError();
 
@@ -71,7 +71,7 @@ class Application {
         void ExecuteCommand(const std::string& command);
 
         /*! \return the table from tables
-         *   \param int index - the index of the table in the tables vector
+         *  \param int index - the index of the table in the tables vector
          */ 
         const SingletonTable& GetTable(int index) const {return *(tables[index]);}
 
