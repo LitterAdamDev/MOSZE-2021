@@ -23,6 +23,7 @@ class Application {
         void Print();
         std::string PrintError();
         void ExecuteCommand(const std::string& command);
+        const SingletonTable& GetTable(int index) const {return *(tables[index]);}
 
     private:
         void New(const std::string&);

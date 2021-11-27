@@ -173,7 +173,7 @@ public:
 
     static bool is_number(const std::string& );    
 
-    std::string GetCellValue(unsigned row, unsigned column);
+    std::string GetCellValue(unsigned row, unsigned column) const;
 
     /*! \brief compare function:
     * compares a and b 

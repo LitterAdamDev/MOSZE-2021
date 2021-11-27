@@ -913,7 +913,7 @@ std::string& SingletonTable::string_toupper(std::string&& myst){
     }
     return myst;
 }
-std::string SingletonTable::GetCellValue(unsigned row, unsigned column){
+std::string SingletonTable::GetCellValue(unsigned row, unsigned column) const{
     if ((row > table_.size()-1) || (column > table_[0].size())){
         std::cerr<<"Cell out of range!\n";
         return "";
