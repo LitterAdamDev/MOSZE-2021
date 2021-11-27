@@ -58,7 +58,5 @@ jobs:
     - uses: actions/checkout@v2
     - name: Make main
       run: make
-    - name: Give permissions
-      run: sudo chmod -R o+rw runMemcheck.sh
     - name: Run memcheck
-      run: ./runMemcheck.sh main
+      run: valgrind ./main < ./memcheck_input.txt
