@@ -56,8 +56,6 @@ jobs:
     container: quaranteam1/quaranteam:latest
     steps:
     - uses: actions/checkout@v2
-    - name: Install valgrind
-      run: sudo apt-get install valgrind
     - name: Make main
       run: make
     - name: Run memcheck
