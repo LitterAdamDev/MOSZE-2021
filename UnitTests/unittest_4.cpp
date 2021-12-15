@@ -1,15 +1,16 @@
 //sudo apt install libgtest-dev
-#include "../SingletonTable.h"
+#include "../Application.h"
 #include <gtest/gtest.h>
 
 TEST(Feladat4, funcTest) {
-  char testFile[13]= "testdata.csv";
-  char* paraFileName[2];
-  paraFileName[1]= testFile;
-  SingletonTable* singleton = SingletonTable::GetInstance(2,paraFileName);
+  std::string testFileName= "testdata.csv";
+  SingletonTable* initTable;
+  initTable=new SingletonTable(testFileName);
+  Application* myApp =new Application(initTable, true);
 
-  ASSERT_EQ(singleton->GetCellValue(0,0), "#NAME?");
-  EXPECT_NEAR(std::stof(singleton->GetCellValue(2,1)), 15.0f, 1e-9 );
+  ASSERT_EQ(myApp->GetTable(0).GetCellValue(0,0), "#NAME?");
+  EXPECT_NEAR(std::stof(myApp->GetTable(0).GetCellValue(2,1)), 15.0f, 1e-9 );
+  delete myApp;
 }
 
 int main(int argc, char **argv) {

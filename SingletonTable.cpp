@@ -1,8 +1,8 @@
 #include "SingletonTable.h"
 
-SingletonTable::SingletonTable(): table_{{Cell(table_)}},error_{""}, isOn{true}{}
+SingletonTable::SingletonTable(): table_{{Cell(table_)}},error_{""}, isOn{true}, name_{"Table"}{}
 
-SingletonTable::SingletonTable(std::string filename): error_{""}, isOn{true}{
+SingletonTable::SingletonTable(std::string filename): error_{""}, isOn{true}, name_{filename}{
    
     std::string line;
     std::ifstream fin;
@@ -46,7 +46,7 @@ SingletonTable::SingletonTable(std::string filename): error_{""}, isOn{true}{
     fin.close();
 }
 
-SingletonTable::SingletonTable(std::string filename,std::string separator): error_{""}, isOn{true}{
+SingletonTable::SingletonTable(std::string filename,std::string separator): error_{""}, isOn{true}, name_{filename}{
     std::string line;
     std::ifstream fin;
     fin.open(filename, std::ios::in);
@@ -660,40 +660,6 @@ void SingletonTable::ExecuteCommand(const std::string& command){
     }
 }
 
-
-SingletonTable *SingletonTable::SingletonTable_= nullptr;
-
-SingletonTable *SingletonTable::GetInstance(int counter,  char** arguments)
-{
-    if(SingletonTable_==nullptr){
-        if(counter == 2){
-            std::ifstream ifile;
-            ifile.open(arguments[1]);
-            if(ifile && std::string(arguments[1]).substr(std::string(arguments[1]).length() - 4) == ".csv") {
-                SingletonTable_ = new SingletonTable(std::string(arguments[1]));
-            } else {
-                SingletonTable_ = new SingletonTable();
-            }
-        }else if(counter == 4){
-            std::ifstream ifile;
-            ifile.open(arguments[1]);
-            if(
-                ifile && 
-                std::string(arguments[1]).substr(std::string(arguments[1]).length() - 4) == ".csv" &&
-                std::string(arguments[2]) == "-sep" &&
-                std::string(arguments[3]).length() == 1
-                ) {
-                SingletonTable_ = new SingletonTable(std::string(arguments[1]),std::string(arguments[3])); //implementalni
-            } else {
-                SingletonTable_ = new SingletonTable();
-            }
-        }else{
-            SingletonTable_ = new SingletonTable();
-        }
-    }
-    return SingletonTable_;
-}
-
 bool SingletonTable::is_number(const std::string& s){
     std::string::const_iterator it = s.begin();
     while (it != s.end() && (std::isdigit(*it) || *it == '.')) ++it;
@@ -942,7 +908,7 @@ std::string& SingletonTable::string_toupper(std::string&& myst){
     }
     return myst;
 }
-std::string SingletonTable::GetCellValue(unsigned row, unsigned column){
+std::string SingletonTable::GetCellValue(unsigned row, unsigned column) const{
     if ((row > table_.size()-1) || (column > table_[0].size())){
         std::cerr<<"Cell out of range!\n";
         return "";

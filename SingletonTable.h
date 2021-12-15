@@ -9,7 +9,7 @@
 #include <sstream>
 #include <float.h>
 #include "Cell.h"
-
+/**/
 typedef std::vector<std::vector<Cell>> Table; /*! definition of Table vector */
 
 /*! \brief SingletonTable class:
@@ -18,21 +18,13 @@ typedef std::vector<std::vector<Cell>> Table; /*! definition of Table vector */
 class SingletonTable
 {
 protected:
-/*! \brief Constructor of SingletonTable class
- *  Reads the data from a file 
- *  \param string filename 
- *  \param string separator
- *  Initialize: error with "", isOn with true
- */
-    SingletonTable();  
-    SingletonTable(std::string); 
-    SingletonTable(std::string,std::string);
-    static SingletonTable* SingletonTable_;
     std::string value_;
     Table table_;
     std::string error_;
 
     bool isOn;
+    std::string name_;
+
     /*! \brief Edit:
     * Enter the specified string into the cell with XY coordinates
     * \param string &attrs
@@ -74,12 +66,6 @@ protected:
     *  \param  const string &command
     */                                   
     void SetError(const std::string&);      
-
-    /*! \brief SplitString: Split the strings 
-    *  \param string& s
-    *  \param vector<std::string>& v
-    */                              
-    void SplitString(const std::string&, std::vector<std::string>&);    
 
     /*! sets the isOn with a value
     *  \param bool value
@@ -131,30 +117,40 @@ protected:
         sortByRow=0
     };        
 
+
+
+public:
+    /*! \brief Constructor of SingletonTable class
+    *  Reads the data from a file 
+    *  \param string filename 
+    *  \param string separator
+    *  Initialize: error with "", isOn with true
+    */
+    SingletonTable();  
+    SingletonTable(std::string); 
+    SingletonTable(std::string,std::string);
+    SingletonTable(SingletonTable&) = delete;                           
+    void operator=(const SingletonTable&) = delete;
+
+    /*! \brief Execute the commands:
+    *  Checks which command is used and execute it.
+    *  \param string&
+    */   
+    void ExecuteCommand(const std::string&);  
+    
+    /*! \brief SplitString: Split the strings 
+    *  \param string& s
+    *  \param vector<std::string>& v
+    */                              
+    static void SplitString(const std::string&, std::vector<std::string>&);
+
     /*! \brief toupper:
     *  converts a given character to uppercase. 
     *  Only English alphabet a - z.
     *  \param string& myst
     */                                                             
-    std::string& string_toupper(std::string& myst);                     
-    std::string& string_toupper(std::string&& myst);
-
-public:
-    SingletonTable(SingletonTable&) = delete;                           
-    void operator=(const SingletonTable&) = delete;
-
-    /*! \brief GetInstance:
-    *  initializes the SingletonTable class object 
-    *  \param int counter 
-    *  \param char** arguments
-    */
-    static SingletonTable *GetInstance(int,char**);  
-
-    /*! \brief Execute the commands:
-    *  Checks which command is used and execute it.
-    *  \param const string &command
-    */   
-    void ExecuteCommand(const std::string&);    
+    static std::string& string_toupper(std::string& myst);                     
+    static std::string& string_toupper(std::string&& myst);  
 
     /*! \brief PrintTable: Prints the table */  
     void PrintTable();     
@@ -164,15 +160,21 @@ public:
     */                                                    
     std::string PrintError();   
 
-    bool GetIsOn() const;     /*! \return the value of isOn  */      
+    bool GetIsOn() const;     /*! \return the value of isOn  */     
+    
+     
+    std::string GetName(){return name_;}
+   
+    void SetName(std::string newName){name_=newName;}
 
     /*! \brief is_number:
     *  checks a string is convertable to a number.
     *  \param string& s
     */
+
     static bool is_number(const std::string& );    
 
-    std::string GetCellValue(unsigned row, unsigned column);
+    std::string GetCellValue(unsigned row, unsigned column) const;
 
     /*! \brief compare function:
     * compares a and b 
