@@ -59,4 +59,4 @@ jobs:
     - name: Make main
       run: make
     - name: Run memcheck
-      run: ./runMemcheck.sh main
+      run: valgrind ./main < ./memcheck_input.txt

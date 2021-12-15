@@ -134,7 +134,7 @@ public:
 
     /*! \brief Execute the commands:
     *  Checks which command is used and execute it.
-    *  \param const string &command
+    *  \param string&
     */   
     void ExecuteCommand(const std::string&);  
     
