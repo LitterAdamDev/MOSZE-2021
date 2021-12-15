@@ -7,8 +7,12 @@ main
 generated_output.txt
 /docs
 .log
-
 !example.csv
 *.out
 # Local History for Visual Studio Code
 .history/
+UnitTests/CMakeFiles/*
+UnitTests/cmake_install.cmake
+UnitTests/CMakeCache.txt
+UnitTests/runTests
+!UnitTests/testdata.csv
