@@ -653,6 +653,8 @@ void SingletonTable::ExecuteCommand(const std::string& command){
         Align(param);
     }else if(commandType == "sort"){
         Sort(param);
+    }else if(commandType == "barchart"){
+        BarChart(param);
     }else{
         SetError("There is no command with the name \"" + commandType + "\"!");
     }
@@ -953,4 +955,148 @@ bool SingletonTable::compare_func(const Cell& a,const Cell& b, const SortType& s
         return a>b;
     }
     return a<b;
+}
+
+void SingletonTable::BarChart(const std::string &attrs){
+    std::vector<std::string> parts;
+    SplitString(attrs,parts);
+    if(parts.size() == 2){
+        int pos = parts[0].find(':');
+        if(pos != -1){
+            if (parts[1].substr(parts[1].length()-5) == ".html" || parts[1].substr(parts[1].length()-4) == ".svg"){
+                std::string firstCell = parts[0].substr(0,pos);
+                std::string secondCell = parts[0].substr(pos+1,parts[0].length());
+                if(
+                    isalpha(firstCell[0]) &&
+                    is_number(firstCell.substr(1,firstCell.length())) &&
+                    isalpha(secondCell[0]) &&
+                    is_number(secondCell.substr(1,secondCell.length()))
+                ){
+                    int topLeftRow;
+                    int topLeftCol;
+                    int bottomRightRow;
+                    int bottomRightCol;
+                    if(std::toupper(firstCell[0]) != std::toupper(secondCell[0])){
+                        topLeftRow = stoi(firstCell.substr(1,firstCell.length())) < stoi(secondCell.substr(1,secondCell.length()))?
+                        stoi(firstCell.substr(1,firstCell.length())) : stoi(secondCell.substr(1,secondCell.length()));
+                        bottomRightRow = stoi(firstCell.substr(1,firstCell.length())) > stoi(secondCell.substr(1,secondCell.length()))?
+                        stoi(firstCell.substr(1,firstCell.length())) : stoi(secondCell.substr(1,secondCell.length()));
+                        topLeftCol = int(std::toupper(firstCell[0]) - 'A') < int(std::toupper(secondCell[0]) - 'A')?
+                        int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
+                        bottomRightCol = int(std::toupper(firstCell[0]) - 'A') > int(std::toupper(secondCell[0]) - 'A')?
+                        int(std::toupper(firstCell[0]) - 'A') : int(std::toupper(secondCell[0]) - 'A');
+
+                        bool wrongInput=true;
+                        if(table_.size()>=bottomRightRow &&  table_[0].size()>=bottomRightCol 
+                        && firstCell[1]<secondCell[1]+secondCell[2] &&  table_[0].size()>=int(std::toupper(secondCell[0]) - 'A' + 1)){
+                            unsigned r = topLeftRow-1;
+                            while( r < bottomRightRow && wrongInput){
+                                for(unsigned c = topLeftCol+1; c <= bottomRightCol; c++){
+                                    if(!is_number(table_[r][c].GetValue())){ 
+                                       wrongInput = false; 
+                                    }
+                                }
+                                r++;
+                            }
+                            if (wrongInput){   
+                                int diff;
+                                unsigned c = topLeftCol+1;
+                                while(c < bottomRightCol && wrongInput){
+                                    if(c == topLeftCol+1){
+                                        diff = stoi(table_[topLeftRow-1][c+1].GetValue())-stoi(table_[topLeftRow-1][c].GetValue());
+                                        }
+                                    if(stoi(table_[topLeftRow-1][c].GetValue()) >= stoi(table_[topLeftRow-1][c+1].GetValue()) 
+                                    || diff != stoi(table_[topLeftRow-1][c+1].GetValue())-stoi(table_[topLeftRow-1][c].GetValue())){
+                                        wrongInput = false;
+                                    }
+                                    c++;
+                                } 
+                                if(wrongInput){
+                                    int x_axis_coord = 20;
+                                    int y_axis_coord;
+                                    int y_axis_height = 25 *bottomRightCol-topLeftCol;
+                                    int viewBox =  (bottomRightRow -(topLeftRow-1)) * (bottomRightCol -(topLeftCol))*25;
+                                    int y;
+                                    int x = 10;
+                                    int height;
+                                    int counter;
+
+                                    std::ofstream out(parts[1]);
+                                    if (parts[1].substr(parts[1].length()-5) == ".html"){
+                                        out << "<style>"<< '\n';  
+                                        out << ".bar {fill: #bd0202;}"<< '\n';        
+                                        out << ".axis {font: 12px sans-serif;}"<< '\n';;        
+                                        out << ".axis line {fill: none;stroke: #000;shape-rendering: crispEdges;}"<< '\n';     
+                                        out << "svg{display: inline-block;position: absolute;}"<< '\n';
+                                        out << ".svg-container {position: relative; width: 100%; padding-bottom: 100%; vertical-align: top;}"<< '\n';
+                                        out << "</style>"<< '\n';
+                                        out << "<div class='svg-container'>" << '\n';
+                                    }
+                                    out << "<svg viewBox='0 0 "<< viewBox <<" "<< viewBox <<"' height='100%' width='100%' version='1.1' xmlns='http://www.w3.org/2000/svg'>"<< '\n';  
+                                    out << "<g  transform='translate(40,50)'>"<< '\n';  
+                                    out << "<g class='axis' transform='translate(0,"<< y_axis_height << ")'>" << '\n';
+                                // x axis
+                                    for(unsigned i = topLeftCol+1; i <= bottomRightCol; i++){
+                                        for(unsigned r = topLeftRow; r < bottomRightRow; r++){     
+                                            out << "<g  transform='translate("<< x_axis_coord << ",0)'><line y2='6' x2='0'></line>" << '\n';
+                                            out << "<text dy='1em' y='9' x='0' style='text-anchor: middle;'>" << table_[r][topLeftCol].GetValue() << "</text>" << '\n';            
+                                            out << "</g>" << '\n';
+                                            x_axis_coord += 25;
+                                        }
+                                        x_axis_coord+=20;
+                                        out << "<g  transform='translate("<< x_axis_coord << ",0)'>" << '\n';
+                                        out << "</g>" << '\n';
+                                    }
+                                    out << "</g>" << '\n';
+                                    out << "<g class='y axis'>" << '\n';
+                                    counter=0;
+                                // y axis
+                                    for(unsigned c = topLeftCol+1; c <= bottomRightCol; c++){
+                                        int y_axis_coord = y_axis_height - counter*25;
+                                        counter++;
+                                        out << "<g  transform='translate(0,"<< y_axis_coord << ")'><line x2='-6' y2='0'></line>" << '\n';
+                                        out << "<text dy='.2em' x='-15' y='0' style='text-anchor: end;'>" << table_[topLeftRow-1][c].GetValue() << "</text>" << '\n';            
+                                        out << "</g>" << '\n';
+                                    } 
+                                    out << "<line x1='0' y1='0' x2='0' y2='" << y_axis_height << "' />" << '\n';
+                                    out << "</g>" << '\n';
+                                    for(unsigned c = topLeftCol+1; c <= bottomRightCol; c++){ 
+                                        for(unsigned r = topLeftRow; r < bottomRightRow; r++){
+                                            height = (25 * (stoi(table_[r][c].GetValue()) - stoi(table_[topLeftRow-1][topLeftCol+1].GetValue()))+1) / diff;
+                                            if(height<=0){height = 1;}                       
+                                            y = y_axis_height - height;
+                                            out << "<rect class='bar' x='"<< x <<"' width='20' y='"<< y <<"' height='" << height << "'></rect>" << '\n'; 
+                                            x += 25;
+                                        }
+                                        x+=20;
+                                    }
+                                    out << "</g>" << '\n';
+                                    out << "</svg>" << '\n';
+                                    if (parts[1].substr(parts[1].length()-5) == ".html"){
+                                        out << "</div>" << '\n';
+                                    }
+                                }else{
+                                    SetError("Only works with ascending row of numbers on y-axis!");
+                                }
+                            }else{
+                                SetError("Only works with numbers!");
+                            }
+                        }else{
+                            SetError("Wrong range of the cells!");
+                        }
+                     }else{ 
+                         SetError("Wrong range parameters!");
+                     }
+                }else{
+                    SetError("Wrong position attributes!");
+                }
+            }else{
+                SetError("Wrong file name!");
+            }
+        }else{
+           SetError("Wrong range parameter format!");
+        }
+    }else{
+        SetError("Wrong attributes!");
+    }
 }

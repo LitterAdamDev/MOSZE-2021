@@ -113,7 +113,15 @@ protected:
 
     void RefreshTable(){  /*! calls the refresh function on the table */
         Cell::Refresh(this->table_,"");
-    }                                      
+    }
+    
+    /*! \brief BarChart:
+    * Generates an SVG diagram representing a grouped bar graph from a specified range. 
+    * The cells in the first column of the range are the labels of the X-axis points, and the first row is the name of the data series.
+    * \param string &attrs
+    */
+    void BarChart(const std::string&);   
+
     enum SortType{                                                      
         asc=1,
         desc=0

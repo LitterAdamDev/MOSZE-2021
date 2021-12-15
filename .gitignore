@@ -7,6 +7,10 @@ main
 generated_output.txt
 /docs
 .log
+*html
+*svg
+
+
 !example.csv
 *.out
 # Local History for Visual Studio Code

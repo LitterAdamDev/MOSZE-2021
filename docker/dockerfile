@@ -1,0 +1,14 @@
+FROM ubuntu:20.04
+ENV TZ=Europe
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN apt-get update && apt-get install  -y \
+  make \
+  doxygen \
+  texlive-latex-extra \
+  graphviz \
+  build-essential \
+  libgtest-dev \
+  cmake \
+&& rm -rf /var/lib/apt/lists/*
+
