@@ -31,8 +31,8 @@ protected:
     std::string value_;
     Table table_;
     std::string error_;
-    bool isOn;
 
+    bool isOn;
     /*! \brief Edit:
     * Enter the specified string into the cell with XY coordinates
     * \param string &attrs
