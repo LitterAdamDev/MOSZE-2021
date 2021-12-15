@@ -9,7 +9,7 @@
 #include <sstream>
 #include <float.h>
 #include "Cell.h"
-
+/**/
 typedef std::vector<std::vector<Cell>> Table; /*! definition of Table vector */
 
 /*! \brief SingletonTable class:
