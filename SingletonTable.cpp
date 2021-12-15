@@ -5,7 +5,7 @@ SingletonTable::SingletonTable(): table_{{Cell(table_)}},error_{""}, isOn{true},
 SingletonTable::SingletonTable(std::string filename): error_{""}, isOn{true}, name_{filename}{
    
     std::string line;
-    std::fstream fin;
+    std::ifstream fin;
     fin.open(filename, std::ios::in);
     std::vector<std::string> rows;
     unsigned maxCols = 0;
@@ -48,7 +48,7 @@ SingletonTable::SingletonTable(std::string filename): error_{""}, isOn{true}, na
 
 SingletonTable::SingletonTable(std::string filename,std::string separator): error_{""}, isOn{true}, name_{filename}{
     std::string line;
-    std::fstream fin;
+    std::ifstream fin;
     fin.open(filename, std::ios::in);
     std::vector<std::string> rows;
     unsigned maxCols = 0;
@@ -887,9 +887,7 @@ bool operator>(const Cell& a,const Cell& b){
 }
 
 std::string& SingletonTable::string_toupper(std::string& myst){
-    /*!
-    * Only English alphabet a - z
-    */
+    /* Only English alphabet a - z */
     for (unsigned i=0; i<myst.length(); i++){
         for (char& ch : myst){
             if ( ( ch >= 'a' ) && ( ch <= 'z' ) ) {
@@ -899,11 +897,8 @@ std::string& SingletonTable::string_toupper(std::string& myst){
     }
     return myst;
 }
-
 std::string& SingletonTable::string_toupper(std::string&& myst){
-     /*!
-    * Only English alphabet a - z
-    */
+    /* Only English alphabet a - z */
     for (unsigned i=0; i<myst.length(); i++){
         for (char& ch : myst){
             if ( ( ch >= 'a' ) && ( ch <= 'z' ) ) {

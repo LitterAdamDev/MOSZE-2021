@@ -21,6 +21,7 @@ protected:
     std::string value_;
     Table table_;
     std::string error_;
+
     bool isOn;
     std::string name_;
 
